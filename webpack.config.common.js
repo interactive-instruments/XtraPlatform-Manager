@@ -11,10 +11,10 @@ const extractSass = new ExtractTextPlugin({
 });
 
 return {
-    context: resolve(),
+    context: resolve(__dirname, 'src'),
 
     entry: [
-        './src/index.jsx'
+        './index.jsx'
     ],
     output: {
         filename: '[name].js',
