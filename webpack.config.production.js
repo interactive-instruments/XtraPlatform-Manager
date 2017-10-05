@@ -13,9 +13,7 @@ return webpackMerge(commonConfig(env), {
     devtool: 'eval',
 
     plugins: [
-        new CleanWebpackPlugin(['resources/manager'], {
-            root: resolve('../')
-        }),
+        new CleanWebpackPlugin(['build']),
 
         new webpack.HashedModuleIdsPlugin(),
 

@@ -14,11 +14,11 @@ return {
     context: resolve(),
 
     entry: [
-        './index.jsx'
+        './src/index.jsx'
     ],
     output: {
         filename: '[name].js',
-        path: resolve('../resources/manager')
+        path: resolve(__dirname, 'build') 
     },
 
     devtool: 'eval',
@@ -72,7 +72,7 @@ return {
         new HtmlWebpackPlugin({
             title: 'XtraPlatform Manager',
             //favicon: 'assets/img/favicon.png',
-            template: resolve(__dirname, 'index.html')
+            template: resolve(__dirname, 'src/index.html')
         }),
 
         extractSass
