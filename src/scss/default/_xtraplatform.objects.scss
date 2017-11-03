@@ -1,3 +1,49 @@
 td {
   border-bottom: 1px solid $border-color;
 }
+
+.grommetux-check-box--toggle.xtraplatform-checkbox-ui {
+	width: 100%;
+
+	.grommetux-check-box__label {
+		display: inline-grid;
+	}
+
+	&.xtraplatform-smaller {
+		.grommetux-check-box__control {
+			width: round($control-size * 1.33);
+	    	height: round($control-size / 1.33);
+	    	border-radius: round($control-size / 1.33);
+
+	    	&:after {
+	    		width: round($control-size / 1.33) + round($control-border-width * 1.5);
+	      		height: round($control-size / 1.33) + round($control-border-width * 1.5);
+	      		border-radius: round($control-size / 1.33);
+	      		top: - round($control-border-width / 1.33);
+	    	}
+		}
+
+		.grommetux-check-box__input {
+			&:checked + .grommetux-check-box__control {
+				&:after {
+		    		margin-left: round($control-size / 1.33);
+		    	}
+			}
+		}
+	}
+}
+
+.grommetux-toast {
+	background-color: transparent;
+}
+
+.grommetux-toast__container {
+	width: 300px;
+	margin: 0 auto;
+	right: 0px;
+	left: 0px;
+}
+
+.grommetux-toast__closer {
+  display: none !important;
+}

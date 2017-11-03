@@ -20,6 +20,7 @@
  */
 
 import { createAction, handleActions } from 'redux-actions';
+import { LOCATION_CHANGED } from 'redux-little-router';
 //import { normalize, Schema, arrayOf } from 'normalizr';
 //import { createSelector } from 'reselect'
 //import { actions as reportActions } from './reporter'
@@ -54,6 +55,7 @@ const initialState = {
 
 // reducer
 export default handleActions({
+    [LOCATION_CHANGED]: onLocationChange,
     [actions.fetchedServices]: fetchedServices,
     [actions.fetchedService]: fetchedService,
     [actions.fetchFailed]: fetchFailed,
@@ -67,6 +69,18 @@ export default handleActions({
     [actions.selectFeatureType]: selectFeatureType
 }, initialState);
 
+
+function onLocationChange(state, action) {
+    const ftid = action.payload.params ? action.payload.params.ftid : null
+    if (ftid) {
+        return {
+            ...state,
+            selectedProperty: null
+        }
+    }
+
+    return state
+}
 
 function fetchedServices(state, action) {
     return Object.assign({}, state, action.payload)

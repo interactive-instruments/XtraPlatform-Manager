@@ -22,38 +22,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import TextInput from 'grommet/components/TextInput';
+import Header from 'grommet/components/Header';
+import Heading from 'grommet/components/Heading';
 
-import { handleInputChange } from '../../util'
-
-
-export default class TextInputUi extends Component {
-
-    _handleInputChange = (event) => {
-        const {onChange, onDebounce, readOnly} = this.props;
-
-        if (!readOnly)
-            handleInputChange(event, onChange, onDebounce);
-    }
+export default class NotFound extends Component {
 
     render() {
-        const {name, value, onChange, onDebounce, readOnly, ...attributes} = this.props;
 
         return (
-            <TextInput {...attributes}
-                name={ name }
-                value={ value }
-                onDOMChange={ this._handleInputChange } />
+            <Header size='large' pad={ { horizontal: 'medium' } }>
+                <Heading tag="h3" strong={ true }>
+                    The Page You Requested Could Not Be Found
+                </Heading>
+            </Header>
         );
     }
 }
-
-TextInputUi.propTypes = {
-    name: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    onDebounce: PropTypes.func
-};
-
-TextInputUi.defaultProps = {
-};

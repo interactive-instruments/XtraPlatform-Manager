@@ -37,12 +37,13 @@ export default class AppFromRoutes extends Component {
             typedComponents,
             typeLabels,
             serviceMenu,
-            route
+            route,
+            getTypedComponent: (name, type) => typedComponents[name] ? typedComponents[name][type] : null
         }
 
         const path = `${prefix === '/' ? '' : prefix}${route.path}`
-        console.log(path)
-        return <Fragment key={ path } forRoute={ route.path }>
+        //console.log(path)
+        return <Fragment key={ path } forRoute={ route.path } forNoMatch={ route.forNoMatch }>
                    { <RouteComponent {...componentProps}>
                          { route.routes && this._renderRoutes(route.routes, path) }
                      </RouteComponent> }

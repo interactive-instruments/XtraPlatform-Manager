@@ -43,6 +43,16 @@ export const handleInputChange = (event, onChange, onDebounce, timeout = 1000) =
     }
 }
 
+export const shallowDiffers = (a, b, allowSubset = false, ignore = []) => {
+    if (a === b) return false
+    if (!allowSubset)
+        for (let i in a)
+            if (!(i in b)) return true
+    for (let i in b)
+        if (!ignore.includes(i) && a[i] !== b[i]) return true
+    return false
+}
+
 export const routesToLittleRouter = (route, routes = {}) => {
     const path = route.parent ? route.path.substr(route.parent.length) : route.path
     return {

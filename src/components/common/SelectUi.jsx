@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 European Union
+ * Copyright 2017 interactive instruments GmbH
  * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by
  * the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
@@ -22,38 +22,40 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import TextInput from 'grommet/components/TextInput';
+import Select from 'grommet/components/Select';
 
 import { handleInputChange } from '../../util'
 
 
-export default class TextInputUi extends Component {
+export default class SelectUi extends Component {
 
     _handleInputChange = (event) => {
-        const {onChange, onDebounce, readOnly} = this.props;
+        const {onChange, onDebounce} = this.props;
 
-        if (!readOnly)
-            handleInputChange(event, onChange, onDebounce);
+        handleInputChange(event, onChange, onDebounce);
     }
 
     render() {
-        const {name, value, onChange, onDebounce, readOnly, ...attributes} = this.props;
+        const {name, value, onChange, onDebounce, ...attributes} = this.props;
 
         return (
-            <TextInput {...attributes}
+            <Select {...attributes}
                 name={ name }
                 value={ value }
-                onDOMChange={ this._handleInputChange } />
+                onChange={ this._handleInputChange } />
         );
     }
 }
 
-TextInputUi.propTypes = {
+SelectUi.propTypes = {
     name: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([
+        PropTypes.string.isRequired,
+        PropTypes.object.isRequired
+    ]),
     onChange: PropTypes.func.isRequired,
     onDebounce: PropTypes.func
 };
 
-TextInputUi.defaultProps = {
+SelectUi.defaultProps = {
 };

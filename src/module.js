@@ -24,6 +24,7 @@ import Services from './components/container/Services'
 import ServiceIndex from './components/container/ServiceIndex'
 import ServiceShow from './components/container/ServiceShow'
 import ServiceAdd from './components/container/ServiceAdd'
+import NotFound from './components/presentational/NotFound'
 
 import { render as renderApp } from './components/common/AppLittleRouter'
 import createStore from './create-store'
@@ -37,6 +38,7 @@ export const app = {
         path: '/',
         component: Manager,
         title: 'Manager',
+        index: '/services',
         routes: [
             {
                 path: '/services',
@@ -63,6 +65,12 @@ export const app = {
                         component: ServiceIndex
                     }
                 ]
+            },
+            {},
+            {
+                path: '/404',
+                forNoMatch: true,
+                component: NotFound
             }
         ]
     },
