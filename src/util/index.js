@@ -21,7 +21,7 @@
 
 let _timers = {}
 
-export const handleInputChange = (event, onChange, onDebounce, timeout = 1000) => {
+export const handleInputChange = (event, onChange, onDebounce, onValidate, timeout = 1000) => {
     if (event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : (event.option ? event.option.value : target.value);
@@ -33,6 +33,10 @@ export const handleInputChange = (event, onChange, onDebounce, timeout = 1000) =
 
         if (onChange) {
             onChange(field, value);
+        }
+
+        if (onValidate) {
+            onValidate(field, value);
         }
 
         if (onDebounce) {

@@ -47,3 +47,7 @@ td {
 .grommetux-toast__closer {
   display: none !important;
 }
+
+.grommetux-form-field__help {
+	color: $placeholder-text-color;
+}

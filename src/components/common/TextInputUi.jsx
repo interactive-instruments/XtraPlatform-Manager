@@ -30,14 +30,14 @@ import { handleInputChange } from '../../util'
 export default class TextInputUi extends Component {
 
     _handleInputChange = (event) => {
-        const {onChange, onDebounce, readOnly} = this.props;
+        const {onChange, onDebounce, onValidate, readOnly} = this.props;
 
         if (!readOnly)
-            handleInputChange(event, onChange, onDebounce);
+            handleInputChange(event, onChange, onDebounce, onValidate);
     }
 
     render() {
-        const {name, value, onChange, onDebounce, readOnly, ...attributes} = this.props;
+        const {name, value, onChange, onDebounce, onValidate, readOnly, ...attributes} = this.props;
 
         return (
             <TextInput {...attributes}
@@ -52,7 +52,8 @@ TextInputUi.propTypes = {
     name: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    onDebounce: PropTypes.func
+    onDebounce: PropTypes.func,
+    onValidate: PropTypes.func
 };
 
 TextInputUi.defaultProps = {

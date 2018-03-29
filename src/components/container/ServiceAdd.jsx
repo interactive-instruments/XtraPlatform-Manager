@@ -26,6 +26,7 @@ import { connect } from 'react-redux'
 import { push } from 'redux-little-router'
 import { mutateAsync, requestAsync } from 'redux-query';
 import ui from 'redux-ui';
+import { reducerEnhancer } from 'redux-ui/src/action-reducer';
 
 import Section from 'grommet/components/Section';
 import Box from 'grommet/components/Box';
@@ -42,13 +43,17 @@ import ServiceApi from '../../apis/ServiceApi'
 import { actions } from '../../reducers/service'
 import TextInputUi from '../common/TextInputUi';
 import Anchor from '../common/AnchorLittleRouter';
-
+import uiValidator, { minLength, allowedChars } from '../common/ui-validator';
 
 
 @ui({
     state: {
         id: ''
     }
+})
+
+@uiValidator({
+    id: [minLength(3), allowedChars('A-Za-z0-9-_')]
 })
 
 @connect(
@@ -88,7 +93,7 @@ export default class ServiceAdd extends Component {
     }
 
     render() {
-        const {ui, updateUI, addService, children} = this.props;
+        const {ui, validator, updateUI, addService, children} = this.props;
 
         return (
             <div>
@@ -110,7 +115,10 @@ export default class ServiceAdd extends Component {
                 <Form compact={ false } plain={ true } pad={ { horizontal: 'large', vertical: 'medium' } }>
                     <FormFields>
                         <fieldset>
-                            <FormField label="ID" style={ { width: '100%' } }>
+                            <FormField label="ID"
+                                help="The URL suffix for the new service"
+                                error={ validator.messages.id }
+                                style={ { width: '100%' } }>
                                 <TextInputUi name="id"
                                     autoFocus
                                     value={ ui.id }
@@ -120,7 +128,7 @@ export default class ServiceAdd extends Component {
                         </fieldset>
                     </FormFields>
                     <Footer pad={ { "vertical": "medium" } }>
-                        <Button label='Add' primary={ true } onClick={ (ui.id.length < 3 || (ui.url.length < 11)) ? null : this._addService } />
+                        <Button label='Add' primary={ true } onClick={ validator.valid ? this._addService : null } />
                     </Footer>
                 </Form>
             </div>

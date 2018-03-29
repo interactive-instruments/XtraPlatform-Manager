@@ -67,7 +67,7 @@ function filter(include, exclude, entity, parent) {
             var newKey = entity.wfsAdapter.nsStore.namespaces[key];
             entity.nameSpaces[newKey] = key;
         }
-        delete entity['wfsAdapter'];
+    //delete entity['wfsAdapter'];
     }
     return entity;
 }
