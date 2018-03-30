@@ -18,7 +18,7 @@ export default function validator(validators = {}, initialStateIsValid = false) 
                 valid: true,
                 messages: {}
             };
-            console.log('UI', ui, initial, result);
+            //console.log('UI', ui, initial, result);
 
             if (ui) {
                 if (!initial) {
@@ -28,7 +28,7 @@ export default function validator(validators = {}, initialStateIsValid = false) 
                 Object.keys(validators).forEach(key => result.messages[key] = validators[key](ui[key]));
                 result.valid = Object.keys(validators).reduce((vld, key) => vld && !result.messages[key] && (initialStateIsValid || ui[key] !== initial[key]), result.valid)
 
-                console.log('VALID', result.messages, result.valid);
+            //console.log('VALID', result.messages, result.valid);
             }
 
 
