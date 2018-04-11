@@ -38,7 +38,7 @@ return {
                 use: [{
                     loader: 'babel-loader',
                 }],
-                exclude: /node_modules(?!\/xtraplatform)/
+                exclude: /node_modules(?!(\/|[\\]+)xtraplatform)/
             },
             {
                 test: /\.scss$/,
