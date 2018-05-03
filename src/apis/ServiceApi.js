@@ -22,10 +22,12 @@
 import { normalizeServices, normalizeServiceConfigs } from './ServiceNormalizer'
 
 const API_URL = '../rest/admin/services/';
+const VIEW_URL = '../rest/services/';
 
 const ServiceApi = {
 
     URL: API_URL,
+    VIEW_URL: VIEW_URL,
 
     getServicesQuery: function() {
         return {
