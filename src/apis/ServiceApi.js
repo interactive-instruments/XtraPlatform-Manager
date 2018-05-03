@@ -21,11 +21,15 @@
 
 import { normalizeServices, normalizeServiceConfigs } from './ServiceNormalizer'
 
+const API_URL = '../rest/admin/services/';
+
 const ServiceApi = {
+
+    URL: API_URL,
 
     getServicesQuery: function() {
         return {
-            url: `/rest/admin/services/`,
+            url: `${API_URL}`,
             transform: (serviceIds) => ({
                 serviceIds: serviceIds
             }),
@@ -38,7 +42,7 @@ const ServiceApi = {
 
     getServiceQuery: function(id) {
         return {
-            url: `/rest/admin/services/${id}/`,
+            url: `${API_URL}${id}/`,
             transform: (service) => normalizeServices([service]).entities,
             update: {
                 services: (prev, next) => {
@@ -54,7 +58,7 @@ const ServiceApi = {
 
     getServiceConfigQuery: function(id) {
         return {
-            url: `/rest/admin/services/${id}/config/`,
+            url: `${API_URL}${id}/config/`,
             transform: (serviceConfig) => normalizeServiceConfigs([serviceConfig]).entities,
             update: {
                 serviceConfigs: (prev, next) => next,
@@ -67,7 +71,7 @@ const ServiceApi = {
 
     addServiceQuery: function(service) {
         return {
-            url: `/rest/admin/services/`,
+            url: `${API_URL}`,
             body: JSON.stringify(service),
             options: {
                 method: 'POST',
@@ -96,7 +100,7 @@ const ServiceApi = {
 
     updateServiceQuery: function(service) {
         return {
-            url: `/rest/admin/services/${service.id}/`,
+            url: `${API_URL}${service.id}/`,
             body: JSON.stringify(service),
             options: {
                 method: 'POST',
@@ -125,7 +129,7 @@ const ServiceApi = {
 
     deleteServiceQuery: function(service) {
         return {
-            url: `/rest/admin/services/${service.id}/`,
+            url: `${API_URL}${service.id}/`,
             options: {
                 method: 'DELETE'
             },
