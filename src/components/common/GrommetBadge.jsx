@@ -22,40 +22,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import CheckBox from 'grommet/components/CheckBox';
-
-import { handleInputChange } from '../../util'
+import Box from 'grommet/components/Box';
 
 
-export default class CheckBoxUi extends Component {
-
-    _handleInputChange = (event) => {
-        const {onChange, onDebounce} = this.props;
-
-        handleInputChange(event, onChange, onDebounce);
-    }
+export default class Badge extends Component {
 
     render() {
-        const {name, checked, smaller, onChange, onDebounce, ...attributes} = this.props;
-
         return (
-            <CheckBox name={ name }
-                checked={ checked }
-                onChange={ this._handleInputChange }
-                className={ { 'xtraplatform-checkbox-ui': true, 'xtraplatform-full': true, 'xtraplatform-smaller': smaller } }
-                {...attributes}/>
+            <Box style={ { display: 'inline', padding: '0 5px', borderRadius: '3px' } }
+                margin={ { horizontal: 'small' } }
+                size="xsmall"
+                colorIndex="accent-1"
+                {...this.props}>
+                { this.props.children }
+            </Box>
         );
     }
 }
-
-CheckBoxUi.propTypes = {
-    name: PropTypes.string.isRequired,
-    checked: PropTypes.bool.isRequired,
-    smaller: PropTypes.bool.isRequired,
-    onChange: PropTypes.func.isRequired,
-    onDebounce: PropTypes.func
-};
-
-CheckBoxUi.defaultProps = {
-    smaller: false
-};

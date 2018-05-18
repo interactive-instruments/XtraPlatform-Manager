@@ -3,10 +3,13 @@ td {
 }
 
 .grommetux-check-box--toggle.xtraplatform-checkbox-ui {
-	width: 100%;
-
+	
 	.grommetux-check-box__label {
 		display: inline-grid;
+	}
+
+	&.xtraplatform-full {
+		width: 100%;
 	}
 
 	&.xtraplatform-smaller {
@@ -50,4 +53,8 @@ td {
 
 .grommetux-form-field__help {
 	color: $placeholder-text-color;
+}
+
+.grommetux-list--focus {
+	boxShadow: none;
 }

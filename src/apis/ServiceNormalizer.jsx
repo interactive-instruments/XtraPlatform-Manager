@@ -23,7 +23,7 @@ import { normalize, schema } from 'normalizr';
 
 var commonProps = ['id']; // code
 
-var ftProps = commonProps.concat(['name', 'namespace', 'displayName', 'mappings']);
+var ftProps = commonProps.concat(['name', 'namespace', 'displayName', 'mappings', 'temporalExtent']);
 
 var serviceProps = commonProps.concat(['type', 'name', 'description', 'status', 'featureTypes', 'serviceProperties', 'dateCreated', 'wfsAdapter']);
 

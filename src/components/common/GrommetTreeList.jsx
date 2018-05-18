@@ -52,27 +52,41 @@ class GrommetTreeList extends Component {
 
         //this._select(onSelect, 0);
 
-        return <List selectable={ true } selected={ tree.findIndex(leaf => leaf._id === selected) } /*onSelect={ this._select.bind(this, onSelect) }*/>
+        return <List selectable={ true } style={ { boxShadow: 'none' } } selected={ tree.findIndex(leaf => leaf._id === selected) } /*onSelect={ this._select.bind(this, onSelect) }*/>
                { leafList }
                </List>
     }
 
     _renderLeaf = (leaf, isFirst, isLast, isSelected, isExpanded, hasChildren, depth, onSelect, onExpand) => {
 
-        return <ListItem key={ leaf._id } separator={ isFirst ? 'horizontal' : 'bottom' } onClick={ () => onSelect(leaf) }>
-                   <Box direction="row" pad={ { between: 'small' } } margin='none'>
-                       { depth > 0 && Array(depth).fill(0).map((v, i) => <StatusIcon key={ i }
-                                                                             type="status"
-                                                                             value="blank"
-                                                                             size="small" />) }
-                       { !leaf.expandable ?
-                         <StopIcon size="small" />
-                         :
-                         isExpanded ?
-                         <MinusIcon size="small" onClick={ () => onExpand(leaf) } />
-                         :
-                         <AddIcon size="small" onClick={ () => onExpand(leaf) } /> }
-                       <span className="message">{ leaf.title }</span>
+        return <ListItem key={ leaf._id }
+                   focusable={ false }
+                   separator={ isFirst ? 'horizontal' : 'bottom' }
+                   onClick={ () => onSelect(leaf) }>
+                   <Box direction="row"
+                       justify="between"
+                       margin='none'
+                       full={ { horizontal: true } }>
+                       <Box direction="row"
+                           pad={ { between: 'small' } }
+                           margin='none'
+                           full={ { horizontal: true } }>
+                           { depth > 0 && Array(depth).fill(0).map((v, i) => <StatusIcon key={ i }
+                                                                                 type="status"
+                                                                                 value="blank"
+                                                                                 size="small" />) }
+                           <Box style={ { display: 'inline' } } title={ leaf.iconTitle ? leaf.iconTitle : '' }>
+                               { !leaf.expandable ?
+                                 (leaf.icon ? leaf.icon : <StatusIcon type="status" value="blank" size="small" />)
+                                 :
+                                 isExpanded ?
+                                 <DownIcon size="xsmall" onClick={ () => onExpand(leaf) } />
+                                 :
+                                 <NextIcon size="xsmall" onClick={ () => onExpand(leaf) } /> }
+                           </Box>
+                           <span className="message">{ leaf.title }</span>
+                       </Box>
+                       { leaf.right && leaf.right }
                    </Box>
                </ListItem>
     }

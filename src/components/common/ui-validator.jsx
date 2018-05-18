@@ -25,7 +25,7 @@ export default function validator(validators = {}, initialStateIsValid = false) 
                     initial = ui;
                 }
 
-                Object.keys(validators).forEach(key => result.messages[key] = validators[key](ui[key]));
+                Object.keys(validators).forEach(key => result.messages[key] = validators[key](ui[key], ui));
                 result.valid = Object.keys(validators).reduce((vld, key) => vld && !result.messages[key] && (initialStateIsValid || ui[key] !== initial[key]), result.valid)
 
             //console.log('VALID', result.messages, result.valid);
