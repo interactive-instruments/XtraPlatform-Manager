@@ -35,7 +35,7 @@ import TextInputUi from '../common/TextInputUi';
 
 @ui({
     state: {
-        name: (props) => props.service.name
+        label: (props) => props.service.label
     }
 })
 export default class ServiceEditGeneral extends Component {
@@ -63,8 +63,8 @@ export default class ServiceEditGeneral extends Component {
                                 <TextInput name="id" value={ service.id } disabled={ true } />
                             </FormField>
                             <FormField label="Display name">
-                                <TextInputUi name="name"
-                                    value={ ui.name }
+                                <TextInputUi name="label"
+                                    value={ ui.label }
                                     onChange={ updateUI }
                                     onDebounce={ this._save } />
                             </FormField>

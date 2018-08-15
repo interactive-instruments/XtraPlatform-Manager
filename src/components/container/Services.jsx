@@ -30,7 +30,7 @@ import ServiceApi from '../../apis/ServiceApi'
         return {
             services: state.entities.services, //getServices(state),
             serviceIds: state.entities.serviceIds,
-            serviceType: state.router.params && state.router.params.id && state.entities.services && state.entities.services[state.router.params.id] && state.entities.services[state.router.params.id].type // || 'base'
+            serviceType: state.router.params && state.router.params.id && state.entities.services && state.entities.services[state.router.params.id] && state.entities.services[state.router.params.id].serviceType // || 'base'
         }
     }
 )
