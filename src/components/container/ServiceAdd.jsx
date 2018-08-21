@@ -89,7 +89,24 @@ export default class ServiceAdd extends Component {
         event.preventDefault();
         const {ui, addService} = this.props;
 
-        addService(ui);
+        addService({
+            ...ui,
+            featureProvider: {
+                providerType: 'WFS',
+                connectionInfo: {
+                    uri: ui.url,
+                    user: ui.user,
+                    password: ui.password,
+                    //TODO: defaults
+                    method: 'GET',
+                    version: '2.0.0',
+                    gmlVersion: '3.2.1'
+                },
+                nativeCrs: {
+                    code: 4326
+                }
+            }
+        });
     }
 
     render() {
