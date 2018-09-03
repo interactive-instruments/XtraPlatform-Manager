@@ -40,7 +40,7 @@ const ServiceApi = {
                     }
                 }
             },
-        //force: true
+            force: true
         }
     },
 

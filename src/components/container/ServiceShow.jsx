@@ -56,7 +56,10 @@ import { actions, getSelectedService, getService, getFeatureTypes } from '../../
 @connect(
     (state, props) => {
         return {
-            service: state.entities.serviceConfigs ? state.entities.serviceConfigs[props.urlParams.id] : null
+            service: state.entities.serviceConfigs ? {
+                ...state.entities.services[props.urlParams.id],
+                ...state.entities.serviceConfigs[props.urlParams.id]
+            } : null
         }
     },
     (dispatch) => {
@@ -68,6 +71,7 @@ import { actions, getSelectedService, getService, getFeatureTypes } from '../../
                 dispatch(mutateAsync(ServiceApi.updateServiceQuery(service)))
                     .then((result) => {
                         if (result.status === 200) {
+                            dispatch(requestAsync(ServiceApi.getServiceQuery(service.id)));
                             dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id)));
                         } else {
                             console.log('ERR', result)
@@ -183,7 +187,7 @@ export default class ServiceShow extends Component {
                                   margin="none"
                                   strong={ true }
                                   truncate={ true }>
-                                  { service.name }
+                                  { service.label }
                               </Heading>
                               { sidebarControl }
                           </Header>
