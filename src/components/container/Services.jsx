@@ -22,7 +22,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
-import { connectRequest } from 'redux-query';
+import { connectRequest, requestAsync } from 'redux-query';
 import ServiceApi from '../../apis/ServiceApi'
 
 @connect(
@@ -40,13 +40,35 @@ import ServiceApi from '../../apis/ServiceApi'
         if (!props.serviceIds) {
             return ServiceApi.getServicesQuery()
         }
+        console.log('REQ', /*props.serviceIds*/ );
         return props.serviceIds.map(id => ServiceApi.getServiceQuery(id))
     })
 
 export default class Services extends Component {
 
+    constructor() {
+        super();
+        this.timer = null
+        this.counter = 0
+    }
+
     render() {
-        const {services, serviceIds, serviceType, children, ...rest} = this.props;
+        const {services, serviceIds, serviceType, children, forceRequest, dispatch, ...rest} = this.props;
+
+        const updateServices = Object.keys(services).filter(id => services[id].hasBackgroundTask);
+
+        if (!this.timer && this.counter < 30 && updateServices.length > 0) {
+            console.log('UP');
+            this.timer = setTimeout(() => {
+                console.log('UPPED');
+                this.timer = null;
+                this.counter++;
+                //forceRequest();
+                updateServices.forEach(id => dispatch(requestAsync(ServiceApi.getServiceQuery(id))))
+            }, 1000);
+        } else {
+            this.counter = 0;
+        }
 
         const componentProps = {
             services,

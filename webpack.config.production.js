@@ -13,6 +13,8 @@ const commonConfig = require('./webpack.config.common');
 
 module.exports = function(env) {
 return webpackMerge(commonConfig(env), {
+    mode: 'production',
+
     output: {
         filename: '[name].[chunkhash].js',
     },
@@ -27,15 +29,6 @@ return webpackMerge(commonConfig(env), {
         new webpack.LoaderOptionsPlugin({
             minimize: true,
             debug: false
-        }),
-
-        new webpack.DefinePlugin({
-            'process.env': {
-                'NODE_ENV': JSON.stringify('production')
-            }
-        }),
-
-        new webpack.optimize.UglifyJsPlugin({
         })
     ]
 })

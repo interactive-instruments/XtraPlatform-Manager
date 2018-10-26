@@ -25,7 +25,7 @@ var commonProps = ['id']; // code
 
 var ftProps = commonProps.concat(['name', 'namespace', 'label', 'mappings', 'extent']);
 
-var serviceProps = commonProps.concat(['serviceType', 'label', 'description', 'status', 'featureTypes', 'lastModified', 'createdAt', 'featureProvider']);
+var serviceProps = commonProps.concat(['serviceType', 'label', 'description', 'status', 'featureTypes', 'lastModified', 'createdAt', 'featureProvider', 'hasBackgroundTask', 'progress', 'message']);
 
 function filter(include, exclude, entity, parent) {
     var idFound = false
@@ -53,12 +53,13 @@ function filter(include, exclude, entity, parent) {
         entity.qn = entity.namespace + ':' + entity.name
     }
     if (wfsFound) {
-        for (var key in entity.featureProvider.mappings) {
-            if (entity.featureTypes && entity.featureTypes[key]) {
-                entity.featureTypes[key].id = entity.id + '_' + key;
-                entity.featureTypes[key].origId = key;
+        for (var key in entity.featureTypes) {
+            //if (entity.featureTypes && entity.featureTypes[key]) {
+            entity.featureTypes[key].id = entity.id + '_' + key;
+            entity.featureTypes[key].origId = key;
+            entity.featureTypes[key].mappings = [];
+            if (entity.featureProvider.mappings && entity.featureProvider.mappings[key]) {
                 entity.featureTypes[key].qn = Object.keys(entity.featureProvider.mappings[key])[0];
-                entity.featureTypes[key].mappings = [];
                 for (var key2 in entity.featureProvider.mappings[key]) {
                     entity.featureTypes[key].mappings.push({
                         id: key2 === entity.featureTypes[key].qn ? entity.id + '_' + key : entity.id + '_' + key + '_' + key2,
@@ -67,6 +68,7 @@ function filter(include, exclude, entity, parent) {
                     });
                 }
             }
+        //}
         }
 
     /*entity.mappings = entity.featureProvider.mappings

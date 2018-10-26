@@ -19,7 +19,7 @@
  * for e-Government).
  */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import Tile from 'grommet/components/Tile';
@@ -28,43 +28,61 @@ import Heading from 'grommet/components/Heading';
 import Label from 'grommet/components/Label';
 import StatusIcon from 'grommet/components/icons/Status';
 import Spinning from 'grommet/components/icons/Spinning';
+import Meter from 'grommet/components/Meter';
+import Value from 'grommet/components/Value';
+import Box from 'grommet/components/Box';
 import { Link } from 'redux-little-router';
 
-export default class ServiceTile extends Component {
+export default class ServiceTile extends PureComponent {
 
     render() {
-        const {item, changeLocation, selected} = this.props;
+        const {id, label, status, hasBackgroundTask, message, progress, changeLocation, selected} = this.props;
 
-        let status = item.status === 'INITIALIZING' ? 'Initializing' : (item.status === 'STARTED' ? 'Online' : 'Offline');
-        let icon = item.status === 'INITIALIZING' ? <Spinning size="medium" style={ { verticalAlign: 'middle', marginRight: '6px' } } /> : <StatusIcon value={ item.status === 'STARTED' ? 'ok' : 'critical' } size="medium" />
+        let status1 = <Meter type='bar'
+                          label={ message }
+                          size='large'
+                          value={ progress } />; // item.status === 'INITIALIZING' ? 'Initializing' : (item.status === 'STARTED' ? 'Online' : 'Offline');
+        let icon1 = ''; // item.status === 'INITIALIZING' ? <Spinning size="medium" style={ { verticalAlign: 'middle', marginRight: '6px' } } /> : <StatusIcon value={ item.status === 'STARTED' ? 'ok' : 'critical' } size="medium" />
+        let status2 = status === 'INITIALIZING' ? 'Initializing' : (status === 'STARTED' ? 'Online' : 'Offline');
+        let icon2 = status === 'INITIALIZING' ? <Spinning size="medium" style={ { verticalAlign: 'middle', marginRight: '6px' } } /> : <StatusIcon value={ status === 'STARTED' ? 'ok' : 'critical' }
+                                                                                                                                           size="medium"
+                                                                                                                                           a11yTitle={ status2 }
+                                                                                                                                           title={ status2 } />
         return (
             <Tile align="start"
-                pad="small"
+                pad="none"
                 direction="column"
                 size="large"
-                onClick={ () => changeLocation(`/services/${item.id}`) }
+                onClick={ () => changeLocation(`/services/${id}`) }
                 selected={ selected }
-                a11yTitle={ `View ${item.name} Virtual Machine` }
                 colorIndex="light-1"
                 separator="all"
                 hoverStyle="border"
                 hoverColorIndex="accent-1"
                 hoverBorderSize="large">
-                <Card heading={ <Heading tag="h3" strong={ true }>
-                                    { item.name }
-                                </Heading> }
+                <Card full="horizontal"
+                    heading={ <Heading tag="h3" strong={ true }>
+                                  { label }
+                              </Heading> }
                     textSize="small"
-                    label={ <Label size='small' uppercase={ true } margin='small'>
-                                { item.id }
-                            </Label> }
-                    description={ <span>{ icon } <span style={ { verticalAlign: 'middle' } }>{ status }</span></span> } />
+                    label={ <Box direction="row" justify="between" align="center">
+                                <Label size='small' uppercase={ true } margin='small'>
+                                    { id }
+                                </Label><span title={ status2 }>{ icon2 }</span>
+                            </Box> }
+                    description={ hasBackgroundTask ? <span>{ icon1 } <span style={ { verticalAlign: 'middle' } }>{ status1 }</span></span> : '' } />
             </Tile>
         );
     }
 }
 
 ServiceTile.propTypes = {
-    item: PropTypes.object.isRequired,
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    hasBackgroundTask: PropTypes.bool.isRequired,
+    message: PropTypes.string,
+    progress: PropTypes.number,
     changeLocation: PropTypes.func,
     selected: PropTypes.bool
 };

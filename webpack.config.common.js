@@ -8,14 +8,15 @@
 const resolve = require('path').resolve;
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = function(env) {
 
-const extractSass = new ExtractTextPlugin({
+/*const extractSass = new ExtractTextPlugin({
     filename: "[name].[contenthash].css",
     disable: env !== "production"
-});
+});*/
+const devMode = env !== "production"
 
 return {
     context: resolve(__dirname, 'src'),
@@ -25,7 +26,7 @@ return {
     ],
     output: {
         filename: '[name].js',
-        path: resolve(__dirname, 'build') 
+        path: resolve(__dirname, 'build')
     },
 
     devtool: 'eval',
@@ -49,7 +50,7 @@ return {
             },
             {
                 test: /\.scss$/,
-                use: extractSass.extract({
+                /*use: extractSass.extract({
                     use: [{
                         loader: "css-loader"
                     }, {
@@ -59,14 +60,34 @@ return {
                         }
                     }],
                     fallback: "style-loader"
-                })
+                })*/
+                use: [
+                    devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            includePaths: ["node_modules"]
+                        }
+                    }
+                ]
             }
         ],
     },
 
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/](node_modules|vendor)[\\/]/
+                }
+            }
+        }
+    },
+
     plugins: [
 
-        new webpack.optimize.CommonsChunkPlugin({
+        /*new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
             minChunks: function(module) {
                 return module.context && (module.context.indexOf('node_modules') !== -1 || module.context.indexOf('vendor') !== -1);
@@ -74,6 +95,12 @@ return {
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'manifest'
+        }),*/
+        new MiniCssExtractPlugin({
+            // Options similar to the same options in webpackOptions.output
+            // both options are optional
+            filename: devMode ? '[name].css' : '[name].[hash].css',
+            chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
         }),
 
         new HtmlWebpackPlugin({
@@ -82,7 +109,7 @@ return {
             template: resolve(__dirname, 'src/index.html')
         }),
 
-        extractSass
+        //extractSass
 
     ],
 }

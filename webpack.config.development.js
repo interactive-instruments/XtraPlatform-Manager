@@ -17,6 +17,8 @@ return webpackMerge.strategy({
     entry: 'prepend'
 }
 )(commonConfig(env), {
+    mode: 'development',
+
     entry: [
         'react-hot-loader/patch'
     ],

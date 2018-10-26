@@ -73,7 +73,7 @@ const ServiceApi = {
                         ...service,
                         name: service.id,
                         status: 'INITIALIZING',
-                        dateCreated: Date.now()
+                        createdAt: Date.now()
                     }
                 })
             },

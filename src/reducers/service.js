@@ -162,7 +162,7 @@ function addService(state, action) {
                     ...action.payload,
                     name: action.payload.id,
                     status: 'INITIALIZING',
-                    dateCreated: Date.now()
+                    createdAt: Date.now()
                 }
             }
         }
