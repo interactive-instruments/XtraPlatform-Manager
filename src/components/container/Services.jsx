@@ -64,7 +64,7 @@ export default class Services extends Component {
                 this.timer = null;
                 this.counter++;
                 //forceRequest();
-                updateServices.forEach(id => dispatch(requestAsync(ServiceApi.getServiceQuery(id))))
+                updateServices.forEach(id => dispatch(requestAsync(ServiceApi.getServiceQuery(id, true))))
             }, 1000);
         } else {
             this.counter = 0;

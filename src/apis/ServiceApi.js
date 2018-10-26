@@ -28,7 +28,7 @@ const ServiceApi = {
         }
     },
 
-    getServiceQuery: function(id) {
+    getServiceQuery: function(id, reload) {
         return {
             url: `${API_URL}${id}/`,
             transform: (service) => normalizeServices([service]).entities,
@@ -40,7 +40,7 @@ const ServiceApi = {
                     }
                 }
             },
-            force: true
+            force: reload === true
         }
     },
 
