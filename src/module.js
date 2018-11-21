@@ -11,6 +11,8 @@ import ServiceIndex from './components/container/ServiceIndex'
 import ServiceShow from './components/container/ServiceShow'
 import ServiceAdd from './components/container/ServiceAdd'
 import NotFound from './components/presentational/NotFound'
+import Settings from './components/container/Settings'
+
 
 import { render as renderApp } from './components/common/AppLittleRouter'
 import createStore from './create-store'
@@ -52,7 +54,14 @@ export const app = {
                     }
                 ]
             },
+            
             {},
+            {
+                path: '/settings',
+                component: Settings,
+                title: 'Settings',
+                menu: true
+            },
             {
                 path: '/404',
                 forNoMatch: true,
@@ -83,7 +92,7 @@ let cfg
 const initialData = {
     entities: {
         services: {
-        }
+        },
     }
 }
 

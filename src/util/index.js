@@ -7,6 +7,7 @@
  */
 let _timers = {}
 
+//TODO add support for arrays in select fields, at the Moment only Objects
 export const handleInputChange = (event, onChange, onDebounce, onValidate, timeout = 1000) => {
     if (event) {
         const target = event.target;
