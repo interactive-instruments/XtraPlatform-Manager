@@ -45,16 +45,7 @@ export default class ServiceEditExtensions extends Component {
         onChange({extensions: ui.extensions});
     }
     
-    _save2 = () => {
-        const {ui, onChange} = this.props;
-
-        onChange({extensions: ui.extensions});
-        
-        //wait till response is here
-        
-        //location.reload();
-    }
- 
+   
 
     render() {
         const {service, ui, updateUI} = this.props;
@@ -74,55 +65,34 @@ export default class ServiceEditExtensions extends Component {
             }
             console.log(ui.extensions)        
             for(var i=0; i < numberOfExtensions; i++){
-    
                 var extensionType = Object.values(ui.extensions)[i].extensionType
                 var extensionName = Object.keys(ui.extensions)[i]
-    
-                createCheckbox(this._save,this._save2,displayExtensionsEnabled,extensionName)
+                console.log(extensionName)
+
+                createCheckbox(this._save,displayExtensionsEnabled,extensionName)
 
             }
         }
         
-        function createCheckbox(save,save2,displayExtensionsEnabled,extensionName){
-            
-            //TODO test for reload
-            if(extensionName==="tilesExtension"){
-                return displayExtensionsEnabled.push(
-                    <CheckboxUi name={"enabled"}
-                                label={extensionType}
-                                checked={ui.extensions[extensionName].enabled}
-                                onChange={(field, value) =>  updateUI("extensions", 
-                                    {...ui.extensions, 
-                                        [extensionName]: {
-                                            ...ui.extensions[extensionName], 
-                                            [field]:value
-                                        }
+        function createCheckbox(save,displayExtensionsEnabled,extensionName){
+        
+            return displayExtensionsEnabled.push(
+                <CheckboxUi name={"enabled"}
+                            label={extensionType}
+                            checked={ui.extensions[extensionName].enabled}
+                            onChange={(field, value) =>  updateUI("extensions", 
+                                {...ui.extensions, 
+                                    [extensionName]: {
+                                        ...ui.extensions[extensionName], 
+                                        [field]:value
                                     }
-                                )} 
-                                //(field, value) =>  updateUI('setting', {...ui.setting, [field]: value})
-                                onDebounce={ save2 }/>  
-                )
-            }
-            //TODO END
-            
-            else{
-                return displayExtensionsEnabled.push(
-                    <CheckboxUi name={"enabled"}
-                                label={extensionType}
-                                checked={ui.extensions[extensionName].enabled}
-                                onChange={(field, value) =>  updateUI("extensions", 
-                                    {...ui.extensions, 
-                                        [extensionName]: {
-                                            ...ui.extensions[extensionName], 
-                                            [field]:value
-                                        }
-                                    }
-                                )} 
-                                //(field, value) =>  updateUI('setting', {...ui.setting, [field]: value})
-                                onDebounce={ save }/>  
-                )
-            }
-            
+                                }
+                            )} 
+                            //(field, value) =>  updateUI('setting', {...ui.setting, [field]: value})
+                            onDebounce={ save }/>  
+            )
+        
+        
             
         }
 

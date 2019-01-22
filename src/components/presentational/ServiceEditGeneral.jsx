@@ -35,6 +35,8 @@ import TextInputUi from '../common/TextInputUi';
 
 import ServiceEditExtensions from '../presentational/ServiceEditExtensions'
 import ServiceEditTiles from '../presentational/ServiceEditTiles'
+import ServiceEditStyles from '../presentational/ServiceEditStyles'
+
 
 @ui({
     state: {
@@ -73,6 +75,8 @@ export default class ServiceEditGeneral extends Component {
                         </Form>
                         <ServiceEditExtensions service={service} onChange={this.props.onChange}/>
                         <ServiceEditTiles service={service} onChange={this.props.onChange}/>
+                        <ServiceEditStyles service={service} onChange={this.props.onChange} stylesEnabled={typeof this.props.service.extensions.stylesExtension === "undefined"  ? false : this.props.service.extensions.stylesExtension.enabled}/>
+
                     </AccordionPanel>
                 </Accordion>
             </Section>
