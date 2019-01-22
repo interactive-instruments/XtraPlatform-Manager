@@ -24,14 +24,17 @@ import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 
 import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Heading from 'grommet/components/Heading';
 import Form from 'grommet/components/Form';
 import FormFields from 'grommet/components/FormFields';
 import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
+import Accordion from 'grommet/components/Accordion';
+import AccordionPanel from 'grommet/components/AccordionPanel';
 
 import TextInputUi from '../common/TextInputUi';
+
+import ServiceEditExtensions from '../presentational/ServiceEditExtensions'
+import ServiceEditTiles from '../presentational/ServiceEditTiles'
 
 @ui({
     state: {
@@ -51,26 +54,27 @@ export default class ServiceEditGeneral extends Component {
 
         return (
             <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Box pad={ { horizontal: 'medium' } } separator="bottom">
-                    <Heading tag="h2">
-                        General
-                    </Heading>
-                </Box>
-                <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                    <FormFields>
-                        <fieldset>
-                            <FormField label="Id">
-                                <TextInput name="id" value={ service.id } disabled={ true } />
-                            </FormField>
-                            <FormField label="Display name">
-                                <TextInputUi name="label"
-                                    value={ ui.label }
-                                    onChange={ updateUI }
-                                    onDebounce={ this._save } />
-                            </FormField>
-                        </fieldset>
-                    </FormFields>
-                </Form>
+                  <Accordion animate={true} multiple={true} active={0}>
+                    <AccordionPanel heading="General">  
+                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
+                            <FormFields>
+                                <fieldset>
+                                    <FormField label="Id">
+                                        <TextInput name="id" value={ service.id } disabled={ true } />
+                                    </FormField>
+                                    <FormField label="Display name">
+                                        <TextInputUi name="label"
+                                            value={ ui.label }
+                                            onChange={ updateUI }
+                                            onDebounce={ this._save } />
+                                    </FormField>
+                                </fieldset>
+                            </FormFields>
+                        </Form>
+                        <ServiceEditExtensions service={service} onChange={this.props.onChange}/>
+                        <ServiceEditTiles service={service} onChange={this.props.onChange}/>
+                    </AccordionPanel>
+                </Accordion>
             </Section>
         );
     }
