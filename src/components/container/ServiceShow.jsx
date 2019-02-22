@@ -38,9 +38,13 @@ import ListItem from 'grommet/components/ListItem';
 import LinkPreviousIcon from 'grommet/components/icons/base/LinkPrevious';
 import MoreIcon from 'grommet/components/icons/base/More';
 import ListPlaceholder from 'grommet-addons/components/ListPlaceholder';
+import Accordion from 'grommet/components/Accordion';
+import AccordionPanel from 'grommet/components/AccordionPanel';
 
 import ServiceActions from '../presentational/ServiceActions';
 import ServiceEditGeneral from '../presentational/ServiceEditGeneral';
+import ServiceEditTiles from '../presentational/ServiceEditTiles'
+import ServiceEditStyles from '../presentational/ServiceEditStyles'
 import Anchor from '../common/AnchorLittleRouter';
 
 import { push } from 'redux-little-router'
@@ -79,16 +83,16 @@ import { actions, getSelectedService, getService, getFeatureTypes } from '../../
 
                             // TODO: rollback ui
 
-                        /*dispatch(actions.addFailed({
-                            ...service,
-                            ...error,
-                            text: 'Failed to add service with id ' + service.id,
-                            status: 'critical'
-                        }))*/
+                            /*dispatch(actions.addFailed({
+                                ...service,
+                                ...error,
+                                text: 'Failed to add service with id ' + service.id,
+                                status: 'critical'
+                            }))*/
                         }
                     })
 
-            //dispatch(push('/services'))
+                //dispatch(push('/services'))
             },
             deleteService: (service) => {
                 dispatch(mutateAsync(ServiceApi.deleteServiceQuery(service)))
@@ -143,7 +147,7 @@ export default class ServiceShow extends Component {
     }
 
     _onChange = (change) => {
-        const {service, updateService} = this.props;
+        const { service, updateService } = this.props;
 
         updateService({
             ...change,
@@ -153,7 +157,7 @@ export default class ServiceShow extends Component {
 
     // TODO: use some kind of declarative wrapper like refetch
     render() {
-        const {service, children, updateService, deleteService} = this.props;
+        const { service, children, updateService, deleteService } = this.props;
         console.log('loading service ', service ? service.id : 'none');
 
         let sidebar;
@@ -161,48 +165,70 @@ export default class ServiceShow extends Component {
         let onSidebarClose;
         if ('single' === this.props.responsive) {
             sidebarControl = (
-                <Button icon={ <MoreIcon /> } onClick={ this._onToggleSidebar } />
+                <Button icon={<MoreIcon />} onClick={this._onToggleSidebar} />
             );
             onSidebarClose = this._onToggleSidebar;
         }
         sidebar = (
-            <ServiceActions service={ service }
-                onClose={ onSidebarClose }
-                updateService={ updateService }
-                removeService={ deleteService } />
+            <ServiceActions service={service}
+                onClose={onSidebarClose}
+                updateService={updateService}
+                removeService={deleteService} />
         );
 
+        const stylesEnabled = service && service.capabilities && service.capabilities.find(ext => ext.extensionType === 'STYLES').enabled;
+        const tilesEnabled = service && service.capabilities && service.capabilities.find(ext => ext.extensionType === 'TILES').enabled;
+
         return (
-        service ? <Split flex="left"
-                      separator={ true }
-                      priority={ this.state.showSidebarWhenSingle ? 'right' : 'left' }
-                      onResponsive={ this._onResponsive }>
-                      <div>
-                          <Header pad={ { horizontal: "small", between: 'small', vertical: "medium" } }
-                              justify="start"
-                              size="large"
-                              colorIndex="light-2">
-                              <Anchor icon={ <LinkPreviousIcon /> } path="/services" a11yTitle="Return" />
-                              <Heading tag="h1"
-                                  margin="none"
-                                  strong={ true }
-                                  truncate={ true }>
-                                  { service.label }
-                              </Heading>
-                              { sidebarControl }
-                          </Header>
-                          <Article pad="none" align="start" primary={ true }>
-                              <Section full="horizontal" pad="none">
-                                  <Notification pad="medium" status={ service.status === 'STARTED' ? 'ok' : 'critical' } message={ service.status === 'STARTED' ? 'Online' : 'Offline' } />
-                              </Section>
-                              <ServiceEditGeneral service={ service } onChange={ this._onChange } />
-                              { children }
-                          </Article>
-                      </div>
-                      { sidebar }
-                  </Split>
-            : null
+            service ? <Split flex="left"
+                separator={true}
+                priority={this.state.showSidebarWhenSingle ? 'right' : 'left'}
+                onResponsive={this._onResponsive}>
+                <div>
+                    <Header pad={{ horizontal: "small", between: 'small', vertical: "medium" }}
+                        justify="start"
+                        size="large"
+                        colorIndex="light-2">
+                        <Anchor icon={<LinkPreviousIcon />} path="/services" a11yTitle="Return" />
+                        <Heading tag="h1"
+                            margin="none"
+                            strong={true}
+                            truncate={true}>
+                            {service.label}
+                        </Heading>
+                        {sidebarControl}
+                    </Header>
+                    <Article pad="none" align="start" primary={true}>
+                        <Section full="horizontal" pad="none">
+                            <Notification pad="medium" status={service.status === 'STARTED' ? 'ok' : 'critical'} message={service.status === 'STARTED' ? 'Online' : 'Offline'} />
+                        </Section>
+                        <Section pad={{ vertical: 'medium' }} full="horizontal">
+                            <Accordion animate={true} openMulti={true} active={0}>
+                                <AccordionPanel heading="General">
+                                    <ServiceEditGeneral service={service} onChange={this._onChange} />
+                                </AccordionPanel>
+                                {
+                                    stylesEnabled ?
+                                        <AccordionPanel heading="Styles">
+                                            <ServiceEditStyles styles={service.capabilities.find(ext => ext.extensionType === 'STYLES')} otherCapabilities={service.capabilities.filter(ext => ext.extensionType !== 'STYLES')} onChange={this._onChange} />
+                                        </AccordionPanel>
+                                        : <span />
+                                }
+                                {
+                                    tilesEnabled ?
+                                        <AccordionPanel heading="Vector Tiles">
+                                            <ServiceEditTiles tiles={service.capabilities.find(ext => ext.extensionType === 'TILES')} otherCapabilities={service.capabilities.filter(ext => ext.extensionType !== 'TILES')} onChange={this._onChange} />
+                                        </AccordionPanel>
+                                        : <span />
+                                }
+                                {children}
+                            </Accordion >
+                        </Section>
+                    </Article>
+                </div>
+                {sidebar}
+            </Split>
+                : null
         );
     }
 }
-

@@ -1,91 +1,184 @@
-/*
- * Copyright 2017 European Union
- * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by
- * the European Commission - subsequent versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at:
- *
- * https://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and
- * limitations under the Licence.
- *
- * This work was supported by the EU Interoperability Solutions for
- * European Public Administrations Programme (https://ec.europa.eu/isa2)
- * through the ELISE action (European Location Interoperability Solutions 
- * for e-Government).
- */
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
-import EditTiles from '../presentational/EditTiles'
+
+import Section from 'grommet/components/Section';
+import Box from 'grommet/components/Box';
+import Heading from 'grommet/components/Heading';
+import Form from 'grommet/components/Form';
+import FormFields from 'grommet/components/FormFields';
+import FormField from 'grommet/components/FormField';
+import Accordion from 'grommet/components/Accordion';
+import AccordionPanel from 'grommet/components/AccordionPanel';
+
+
+import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
+import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
+
+import uiValidator, { forbiddenChars } from 'xtraplatform-manager/src/components/common/ui-validator';
+import { validateFormats, validateZoomLevel, validateSeeding } from 'xtraplatform-manager/src/util/tiles-validator';
 
 
 @ui({
     state: {
-        extensions:(props) => typeof props.service.extensions === "undefined" ? null : props.service.extensions,
-        tiles:(props) => typeof props.service.extensions.tilesExtension ==="undefined" ? null : props.service.extensions.tilesExtension,
-        formats: () => [],
-        formatJsonArray: (props) => typeof props.service.extensions.tilesExtension === "undefined" ? true : typeof props.service.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.service.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/json"){
-                    return new Map ([[value, true]]);
+        formats: [],
+        formatJsonArray: (props) => !props.tiles || !props.tiles.formats ? true :
+            Object.entries(
+                props.tiles.formats).map(([key, value]) => {
+                    if (value.toString() === "application/json") {
+                        return new Map([[value, true]]);
+                    }
+                    else {
+                        return new Map([[value, false]])
+                    }
                 }
-                else{
-                    return new Map ([[value, false]])
+                ),
+        formatJsonEnabled: null,
+        formatMvtArray: (props) => !props.tiles || !props.tiles.formats ? true :
+            Object.entries(
+                props.tiles.formats).map(([key, value]) => {
+                    if (value.toString() === "application/vnd.mapbox-vector-tile") {
+                        return new Map([[value, true]])
+                    }
+                    else {
+                        return new Map([[value, false]])
+                    }
                 }
-            } 
-        ),
-        formatJsonEnabled: () => null,
-        formatMvtArray: (props) => typeof props.service.extensions.tilesExtension === "undefined" ? true : typeof props.service.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.service.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/vnd.mapbox-vector-tile"){
-                    return new Map ([[value, true]])
-                }
-                else{
-                    return new Map ([[value, false]])
-                }
-            }
-        ),
-        formatMvtEnabled:()=>null,
+                ),
+        formatMvtEnabled: null,
 
-        maxZoomLevel:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? 22 : typeof props.service.extensions.tilesExtension.zoomLevels === "undefined" ? 22 :
-        props.service.extensions.tilesExtension.zoomLevels.default.max,
-        minZoomLevel:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? 0 : typeof props.service.extensions.tilesExtension.zoomLevels === "undefined" ? 0 :
-         props.service.extensions.tilesExtension.zoomLevels.default.min,
-        maxSeeding:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? "" :  typeof props.service.extensions.tilesExtension.seeding === "undefined" ? "" : 
-        props.service.extensions.tilesExtension.seeding.default.max,
-        minSeeding:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? "" :  typeof props.service.extensions.tilesExtension.seeding === "undefined" ? "" :
-        props.service.extensions.tilesExtension.seeding.default.min
+        minZoomLevel: (props) => !props.tiles || !props.tiles.zoomLevels ? 0 : props.tiles.zoomLevels.default.min,
+        maxZoomLevel: (props) => !props.tiles || !props.tiles.zoomLevels ? 22 : props.tiles.zoomLevels.default.max,
+        minSeeding: (props) => !props.tiles || !props.tiles.seeding ? "" : props.tiles.seeding.default.min,
+        maxSeeding: (props) => !props.tiles || !props.tiles.seeding ? "" : props.tiles.seeding.default.max,
     }
 })
 
-
-
-
+@uiValidator({
+    formats: validateFormats(),
+    maxZoomLevel: validateZoomLevel(true),
+    minZoomLevel: validateZoomLevel(false),
+    maxSeeding: validateSeeding(true),
+    minSeeding: validateSeeding(false)
+}, true)
 
 export default class ServiceEditTiles extends Component {
-    render(){
-        const {service, ui, updateUI} = this.props;
 
-        return(
-            service
-            &&
-            <EditTiles onChange={this.props.onChange} ui={ui} updateUI={updateUI} tilesEnabled={typeof this.props.service.extensions.tilesExtension === "undefined"  ? false : this.props.service.extensions.tilesExtension.enabled}/>
+
+    _save = () => {
+        const { otherCapabilities, ui, validator, onChange } = this.props;
+
+        if (validator.valid) {
+            onChange({
+                capabilities: otherCapabilities
+                    .concat({
+                        extensionType: "TILES",
+                        enabled: true,
+                        formats: ui.formats,
+                        zoomLevels: {
+                            default: {
+                                max: ui.maxZoomLevel,
+                                min: ui.minZoomLevel
+                            }
+                        },
+                        seeding: {
+                            default: {
+                                max: ui.maxSeeding,
+                                min: ui.minSeeding
+                            }
+                        }
+                    })
+                    .sort((a, b) => a.extensionType < b.extensionType ? -1 : a.extensionType === b.extensionType ? 0 : 1)
+            });
+        }
+    }
+
+    render() {
+        const { ui, updateUI, validator } = this.props;
+
+
+        return (
+            <Section pad={{ vertical: 'medium' }} full="horizontal">
+                <Form compact={false} pad={{ horizontal: 'medium', vertical: 'small' }}>
+
+                    <Box pad={{ vertical: 'medium' }}>
+                        <Heading tag="h4">
+                            Formats
+                             </Heading>
+                    </Box>
+
+                    <FormFields>
+                        <fieldset>
+                            <FormField >
+                                <CheckboxUi name='formatJsonEnabled'
+                                    label="application/json"
+                                    checked={ui.formatJsonEnabled}
+                                    onChange={updateUI}
+                                    onDebounce={this._save}
+                                    disabled={!ui.formatMvtEnabled}
+                                    toggle={false}
+                                    reverse={false} />
+                                <CheckboxUi name='formatMvtEnabled'
+                                    label="application/vnd.mapbox-vector-tile"
+                                    checked={ui.formatMvtEnabled}
+                                    onChange={updateUI}
+                                    onDebounce={this._save}
+                                    disabled={!ui.formatJsonEnabled}
+                                    toggle={false}
+                                    reverse={false} />
+                            </FormField>
+                        </fieldset>
+                    </FormFields>
+
+                    <Box pad={{ horizontal: 'none', vertical: 'medium' }}>
+                        <Heading tag="h4">
+                            Zoom Level
+                                 </Heading>
+                    </Box>
+
+                    <FormField label="min zoom level" error={validator.messages.minZoomLevel}>
+                        <TextInputUi name="minZoomLevel"
+                            value={ui.minZoomLevel}
+                            placeHolder="value between 0 and 22"
+                            onChange={updateUI}
+                            onDebounce={this._save}
+                        />
+                    </FormField>
+                    <FormField label="max zoom level" error={validator.messages.maxZoomLevel} >
+                        <TextInputUi name="maxZoomLevel"
+                            value={ui.maxZoomLevel}
+                            placeHolder="value between 0 and 22"
+                            onChange={updateUI}
+                            onDebounce={this._save}
+                        />
+                    </FormField>
+
+                    <Box pad={{ horizontal: 'none', vertical: 'medium' }}>
+                        <Heading tag="h4">
+                            Seeding
+                                 </Heading>
+                    </Box>
+                    <FormField label="begin seeding" error={validator.messages.minSeeding}>
+                        <TextInputUi name="minSeeding"
+                            value={ui.minSeeding}
+                            placeHolder="value between zoom Level range"
+                            onChange={updateUI}
+                            onDebounce={this._save}
+                        />
+                    </FormField>
+                    <FormField label="end seeding" error={validator.messages.maxSeeding}>
+                        <TextInputUi name="maxSeeding"
+                            value={ui.maxSeeding}
+                            placeHolder="value between zoom Level range"
+                            onChange={updateUI}
+                            onDebounce={this._save}
+                        />
+                    </FormField>
+
+                </Form>
+            </Section>
         );
     }
-    
-
-
-
-
-
 }
 
 ServiceEditTiles.propTypes = {

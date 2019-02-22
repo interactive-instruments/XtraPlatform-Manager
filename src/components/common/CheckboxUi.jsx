@@ -30,20 +30,20 @@ import { handleInputChange } from '../../util'
 export default class CheckBoxUi extends Component {
 
     _handleInputChange = (event) => {
-        const {onChange, onDebounce} = this.props;
+        const { onChange, onDebounce } = this.props;
 
         handleInputChange(event, onChange, onDebounce);
     }
 
     render() {
-        const {name, checked, smaller, onChange, onDebounce, ...attributes} = this.props;
+        const { name, checked, smaller, onChange, onDebounce, className, ...attributes } = this.props;
 
         return (
-            <CheckBox name={ name }
-                checked={ checked }
-                onChange={ this._handleInputChange }
-                className={ { 'xtraplatform-checkbox-ui': true, 'xtraplatform-full': true, 'xtraplatform-smaller': smaller } }
-                {...attributes}/>
+            <CheckBox name={name}
+                checked={checked}
+                onChange={this._handleInputChange}
+                className={{ 'xtraplatform-checkbox-ui': true, 'xtraplatform-full': true, 'xtraplatform-smaller': smaller, ...className }}
+                {...attributes} />
         );
     }
 }

@@ -24,82 +24,62 @@ import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 
 import Section from 'grommet/components/Section';
-
 import Form from 'grommet/components/Form';
 import FormFields from 'grommet/components/FormFields';
 import FormField from 'grommet/components/FormField';
 import Accordion from 'grommet/components/Accordion';
 import AccordionPanel from 'grommet/components/AccordionPanel';
 
-
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
 
 @ui({
     state: {
-        extensions:(props) => typeof props.service.extensions === "undefined" ? null : props.service.extensions,
-        managerEnabled: (props) => typeof props.service.extensions.stylesExtension=== "undefined" ? null : props.service.extensions.stylesExtension.managerEnabled,
-        mapsEnabled: (props) =>  typeof props.service.extensions.stylesExtension=== "undefined" ? null : props.service.extensions.stylesExtension.mapsEnabled
+        managerEnabled: (props) => props.styles.managerEnabled,
+        mapsEnabled: (props) => props.styles.mapsEnabled
     }
 })
-
-
-
-
 
 export default class ServiceEditStyles extends Component {
 
     _save = () => {
-        const {ui, onChange} = this.props;
-            onChange({
-                extensions:{
-                    ...ui.extensions,
-                    stylesExtension:{
-                        extensionType:"STYLES",
-                        enabled: true,
-                        managerEnabled: ui.managerEnabled,
-                        mapsEnabled: ui.mapsEnabled
-                    }
-                }
+        const { otherCapabilities, ui, onChange } = this.props;
+        onChange({
+            capabilities: otherCapabilities
+                .concat({
+                    extensionType: "STYLES",
+                    enabled: true,
+                    managerEnabled: ui.managerEnabled,
+                    mapsEnabled: ui.mapsEnabled
+                })
+                .sort((a, b) => a.extensionType < b.extensionType ? -1 : a.extensionType === b.extensionType ? 0 : 1)
+        });
 
-            });
-        
     }
 
-    render(){
-        const {stylesEnabled, ui, updateUI} = this.props;
+    render() {
+        const { ui, updateUI } = this.props;
 
-        return(
-            stylesEnabled            &&
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Accordion animate={true} multiple={true}>
-                    <AccordionPanel heading="Styles">
-                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                            <FormField>
-                                <CheckboxUi name='managerEnabled'
-                                    label="enable styles manager"
-                                    checked={ ui.managerEnabled } 
-                                    onChange={updateUI}
-                                    onDebounce={this._save} />
-                        
-                                <CheckboxUi name='mapsEnabled'
-                                    label="enable maps "
-                                    checked={ ui.mapsEnabled } 
-                                    onChange={updateUI}
-                                    onDebounce={this._save}/>    
-                            </FormField>           
-                        </Form>
-                    </AccordionPanel>
-                </Accordion>
+        return (
+            <Section pad={{ vertical: 'medium' }} full="horizontal">
+                <Form compact={false} pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <FormField>
+                        <CheckboxUi name='managerEnabled'
+                            label="enable styles manager"
+                            checked={ui.managerEnabled}
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+
+                        <CheckboxUi name='mapsEnabled'
+                            label="enable maps "
+                            checked={ui.mapsEnabled}
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+                    </FormField>
+                </Form>
             </Section>
         );
     }
-    
-
-
-
-
-
 }
 
 ServiceEditStyles.propTypes = {
