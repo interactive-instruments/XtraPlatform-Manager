@@ -10,8 +10,9 @@ let _timers = {}
 //TODO add support for arrays in select fields, at the Moment only Objects
 export const handleInputChange = (event, onChange, onDebounce, onValidate, timeout = 1000) => {
     if (event) {
+        //console.log(event)
         const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : (event.option ? event.option.value : target.value);
+        const value = target.type === 'checkbox' ? target.checked : (event.option && event.option.value ? event.option.value : event.value ? event.value : target.value);
         const field = target.name;
 
         if (onDebounce) {

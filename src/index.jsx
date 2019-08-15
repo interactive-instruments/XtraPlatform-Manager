@@ -20,6 +20,7 @@
  */
 
 import { app, render } from './module.js'
-import './scss/default/index'
+//import './scss/default/index'
 
+console.log('HELLO', app)
 render(app);

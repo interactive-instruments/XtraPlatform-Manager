@@ -23,24 +23,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { push } from 'redux-little-router'
 
-import Box from 'grommet/components/Box';
-import Header from 'grommet/components/Header';
-import Title from 'grommet/components/Title';
-import Section from 'grommet/components/Section';
-import Label from 'grommet/components/Label';
-import Search from 'grommet/components/Search';
-import Button from 'grommet/components/Button';
-import Notification from 'grommet/components/Notification';
-import AddIcon from 'grommet/components/icons/base/Add';
-import MenuIcon from 'grommet/components/icons/base/Menu';
-import MoreIcon from 'grommet/components/icons/base/More';
-import Tiles from 'grommet/components/Tiles';
-import Paragraph from 'grommet/components/Paragraph';
-import Menu from 'grommet/components/Menu';
+import { Box, Text, Button, DropButton, Menu, Anchor as Anchor2, ResponsiveContext } from 'grommet';
+import { Add as AddIcon, Menu as MenuIcon, More as MoreIcon, Multiple, Blank } from 'grommet-icons';
 
 import ServiceTile from '../presentational/ServiceTile';
 import NotificationWithCollapsibleDetails from '../common/NotificationWithCollapsibleDetails';
 import Anchor from '../common/AnchorLittleRouter';
+import Tiles from '../common/Tiles'
+import Header from '../common/Header'
+import LoadSaveIndicator from '../common/LoadSaveIndicator'
 
 
 import { actions as srvcActions } from '../../reducers/service'
@@ -89,7 +80,7 @@ class ServiceIndex extends Component {
     }
 
     _onSearch(event) {
-        const {index} = this.props;
+        const { index } = this.props;
         const searchText = event.target.value;
         this.setState({
             searchText
@@ -100,7 +91,7 @@ class ServiceIndex extends Component {
     }
 
     _onMore() {
-        const {index} = this.props;
+        const { index } = this.props;
         //this.props.dispatch(moreIndex(index));
         console.log('getting more services ...');
     }
@@ -117,50 +108,47 @@ class ServiceIndex extends Component {
         });
     }
 
-    _renderSection(label, items = [], onMore) {
-        const {messages, clearMessage, push} = this.props;
+    _renderSection(label, items = [], onMore, compact, small, serviceId) {
+        const { messages, clearMessage, push } = this.props;
         console.log('-----');
-        const tiles = Object.keys(items).sort(function(a, b) {
+        const tiles = Object.keys(items).sort(function (a, b) {
             return items[a].createdAt < items[b].createdAt ? 1 : -1
         }).map(key => {
-            console.log(key);return key;
+            console.log(key); return key;
         }).map((key, index) => (
-            <ServiceTile key={ key } changeLocation={ push } {...items[key]}/>
+            <ServiceTile key={key} selected={key === serviceId} compact={compact} small={small} changeLocation={push} {...items[key]} />
         ));
 
         let header;
         if (label) {
             header = (
-                <Header size='small'
+                <Box size='small'
                     justify='start'
-                    responsive={ false }
+                    responsive={false}
                     separator='top'
-                    pad={ { horizontal: 'small' } }>
-                    <Label size='small'>
-                        { label }
-                    </Label>
-                </Header>
+                    pad={{ horizontal: 'small' }}>
+                    <Text size='small'>
+                        {label}
+                    </Text>
+                </Box>
             );
         }
         return (
-            <Section key={ label || 'section' } pad='none' colorIndex="light-1">
-                { header }
-                { Object.values(messages).map(msg => <NotificationWithCollapsibleDetails key={ msg.id }
-                                                         size="medium"
-                                                         pad="medium"
-                                                         margin={ { bottom: 'small' } }
-                                                         status={ msg.status }
-                                                         message={ msg.text }
-                                                         details={ msg.response && msg.response.details }
-                                                         closer={ true }
-                                                         onClose={ () => clearMessage(msg.id) } />) }
-                <Tiles flush={ false }
-                    fill={ false }
-                    selectable={ false }
-                    onMore={ onMore }>
-                    { tiles }
+            <Box as="section" key={label || 'section'} pad='none' background="content" flex={false}>
+                {header}
+                {Object.values(messages).map(msg => <NotificationWithCollapsibleDetails key={msg.id}
+                    size="medium"
+                    pad="medium"
+                    margin={{ bottom: 'small' }}
+                    status={msg.status}
+                    message={msg.text}
+                    details={msg.details}
+                    closer={true}
+                    onClose={() => clearMessage(msg.id)} />)}
+                <Tiles compact={compact || small}>
+                    {tiles}
                 </Tiles>
-            </Section>
+            </Box>
         );
     }
 
@@ -208,38 +196,48 @@ class ServiceIndex extends Component {
     }*/
 
     render() {
-        const {index, role, services, serviceTypes, typeLabels, serviceMenu, navActive, navToggle} = this.props;
-        const {filterActive, searchText} = this.state;
+        const { index, role, services, serviceTypes, serviceId, typeLabels, serviceMenu, navActive, navToggle, compact, reloadPending, queryPending, queryFinished } = this.props;
+        const { filterActive, searchText } = this.state;
         const result = /*index.result ||*/ {
             items: services
         };
 
         let addControl;
-        if ('read only' !== role) {
+        if (!compact && 'read only' !== role) {
             if (serviceTypes && serviceTypes.length === 1)
                 addControl = (
-                    <Anchor icon={ <AddIcon /> } path={ { pathname: '/services/add', query: { type: serviceTypes[0] } } } title={ `Add service` } />
+                    <Anchor icon={<AddIcon />} pad='none' path={{ pathname: '/services/add', query: { type: serviceTypes[0] } }} title={`Add dataset`} />
                 );
             if (serviceTypes && serviceTypes.length > 1)
                 addControl = (
-                    <Menu inline={ false } icon={ <AddIcon /> } title={ `Add service` }>
-                        { serviceTypes.map(type => <Anchor key={ type }
-                                                       label={ typeLabels && typeLabels[type] || type }
-                                                       path={ { pathname: '/services/add', query: { type: type } } }
-                                                       title={ `Add ${type} service` } />) }
+                    <Menu inline={false} icon={<AddIcon />} title={`Add service`}>
+                        {serviceTypes.map(type => <Anchor key={type}
+                            label={typeLabels && typeLabels[type] || type}
+                            path={{ pathname: '/services/add', query: { type: type } }}
+                            title={`Add ${type} service`} />)}
                     </Menu>
                 );
         }
 
         let menuControl
-        if (serviceMenu && serviceMenu.length) {
-            menuControl = (
-                <Menu inline={ false } icon={ <MoreIcon /> } title={ `More actions` }>
-                    { serviceMenu.map(entry => <Anchor key={ entry.label }
-                                                   label={ entry.label }
-                                                   path={ entry.path }
-                                                   title={ entry.description } />) }
-                </Menu>
+        if (!compact && serviceMenu && serviceMenu.length) {
+            menuControl = (<DropButton title={`More actions`} icon={<MoreIcon />}
+                dropAlign={{ top: 'bottom', left: 'left' }}
+                dropContent={<Box pad="small" gap="small">{serviceMenu.map(entry => <Anchor key={entry.label}
+                    label={entry.label}
+                    path={entry.path}
+                    title={entry.description}
+                />)}</Box>}></DropButton>
+                /*<Menu icon={<MoreIcon title={`More actions`} />} >
+                    {() => serviceMenu.map(entry => <Anchor key={entry.label}
+                        label={entry.label}
+                        path={entry.path}
+                        title={entry.description} />)}
+                </Menu>*/
+                /* <Menu icon={<MoreIcon title={`More actions`} items={serviceMenu.map(entry => ({
+                    label: entry.label,
+                    path: entry.path,
+                    title: entry.description }))} /> */
             );
         }
 
@@ -256,35 +254,47 @@ class ServiceIndex extends Component {
         if (result.count > 0 && result.count < result.total) {
             onMore = this._onMore;
         }
-        sections = this._renderSection(undefined, result.items, onMore);
+        //sections = this._renderSection(undefined, result.items, onMore, compact, serviceId);
         //}
 
         let navControl;
-        if (!navActive) {
-            navControl = <Button onClick={ navToggle.bind(null, true) } plain={ true } a11yTitle={ `Open Menu` }>
-                             <MenuIcon style={ { verticalAlign: 'middle' } } />
-                         </Button>;
+        let label = <Text size='large' weight={500}>Services</Text>;
+        let icon;
+        if (compact) {
+            navControl = <Anchor onClick={navToggle.bind(null, true)} icon={<MenuIcon />} />;
+            label = <Anchor path={{ pathname: '/services' }} label={label} />
+            icon = <LoadSaveIndicator loading={reloadPending || queryPending} success={queryFinished} />
+        } else {
+            navControl = <Multiple />
         }
 
         return (
-            <Box>
-                <Header size='large' pad={ { horizontal: 'medium' } }>
-                    <Title responsive={ false }>
-                        { navControl }
-                        <span>Services</span>
-                    </Title>
-                    { /*<Search inline={ true }
+            <ResponsiveContext.Consumer>
+                {(size) => (
+                    <Box fill='vertical' basis={compact ? '1/3' : 'full'} border={compact && { side: 'right', size: 'small', color: 'light-4' }}>
+                        <Header justify='start' border={{ side: 'bottom', size: 'small', color: 'light-4' }}>
+                            <Box direction="row" align='center' justify="between" fill="horizontal">
+                                <Box direction="row" gap="small" align='center'>
+                                    {navControl}
+                                    {label}
+                                    {addControl}
+                                </Box>
+                                {icon}
+                            </Box>
+                            { /*<Search inline={ true }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         fill={ true }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         size='medium'
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         placeHolder='Search'
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         value={ searchText }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         onDOMChange={ this._onSearch } />*/ }
-                    { addControl }
-                    { menuControl }
-                    { /*<FilterControl filteredTotal={ result.total } unfilteredTotal={ result.unfilteredTotal } onClick={ this._onFilterActivate } />*/ }
-                </Header>
-                { sections }
-                { /*<ListPlaceholder filteredTotal={ result.total }
+
+                            {/*menuControl*/}
+                            { /*<FilterControl filteredTotal={ result.total } unfilteredTotal={ result.unfilteredTotal } onClick={ this._onFilterActivate } />*/}
+                        </Header>
+                        <Box fill='vertical' overflow={{ vertical: 'auto' }}>
+                            {this._renderSection(undefined, result.items, onMore, compact, size === 'small', serviceId)}
+                        </Box>
+                        { /*<ListPlaceholder filteredTotal={ result.total }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     unfilteredTotal={ result.unfilteredTotal }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     emptyMessage='You do not have any virtual machines at the moment.'
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     addControl={ <Button icon={ <AddIcon /> }
@@ -293,7 +303,9 @@ class ServiceIndex extends Component {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      primary={ true }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      a11yTitle={ `Add virtual machine` } /> } />
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 { filterLayer }*/ }
-            </Box>
+                    </Box >
+                )}
+            </ResponsiveContext.Consumer>
         );
     }
 

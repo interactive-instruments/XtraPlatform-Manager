@@ -22,19 +22,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Box from 'grommet/components/Box';
+import { Box } from 'grommet';
 
 
 export default class Badge extends Component {
 
     render() {
         return (
-            <Box style={ { display: 'inline', padding: '0 5px', borderRadius: '3px' } }
-                margin={ { horizontal: 'small' } }
-                size="xsmall"
-                colorIndex="accent-1"
+            <Box
+                pad={{ horizontal: 'xsmall', vertical: 'xxsmall' }}
+                background="brand"
+                round="xsmall"
                 {...this.props}>
-                { this.props.children }
+                {this.props.children}
             </Box>
         );
     }

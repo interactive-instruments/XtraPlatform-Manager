@@ -8,7 +8,7 @@
 import Manager from './components/container/Manager'
 import Services from './components/container/Services'
 import ServiceIndex from './components/container/ServiceIndex'
-import ServiceShow from './components/container/ServiceShow'
+import ServiceShow from './components/container/Service'
 import ServiceAdd from './components/container/ServiceAdd'
 import NotFound from './components/presentational/NotFound'
 import Settings from './components/container/Settings'
@@ -16,12 +16,16 @@ import Settings from './components/container/Settings'
 
 import { render as renderApp } from './components/common/AppLittleRouter'
 import createStore from './create-store'
+import { customTheme } from './theme'
+import ServiceEditGeneral from './components/presentational/ServiceEditGeneral';
+import ServiceEditExtensions from './components/presentational/ServiceEditExtensions';
+import ServiceEditTiles from './components/presentational/ServiceEditTiles';
 
 // TODO: wrap config editing components under ServiceEdit 
 
 export const app = {
     applicationName: 'XtraPlatform',
-    serviceTypes: [ /*'base'*/ ],
+    serviceTypes: ['base'],
     routes: {
         path: '/',
         component: Manager,
@@ -47,20 +51,21 @@ export const app = {
                     {
                         path: '/:id',
                         typedComponent: 'ServiceShow'
-                    },
+                    }/*,
                     {
                         path: '/',
                         component: ServiceIndex
-                    }
+                    }*/
                 ]
             },
-            
+            {},
             {},
             {
                 path: '/settings',
                 component: Settings,
                 title: 'Settings',
-                menu: true
+                menu: true,
+                roles: ['SUPERADMIN', 'ADMIN']
             },
             {
                 path: '/404',
@@ -70,20 +75,28 @@ export const app = {
         ]
     },
     typedComponents: {
-        /*ServiceAdd: {
+        ServiceAdd: {
             base: ServiceAdd
         },
         ServiceShow: {
-            base: ServiceShow
-        }*/
+            WFS3: ServiceShow
+        }
+    },
+    extendableComponents: {
+        ServiceEdit: {
+            General: ServiceEditGeneral,
+            //Api: ServiceEditExtensions,
+            //Tiles: ServiceEditTiles
+        }
     },
     serviceMenu: [],
     mapStateToProps: state => ({
         urlParams: state.router.params,
         urlQuery: state.router.query,
-    //serviceType: state.router.params && state.router.params.id && state.entities.services && state.entities.services[state.router.params.id] && state.entities.services[state.router.params.id].type // || 'base'
+        //serviceType: state.router.params && state.router.params.id && state.entities.services && state.entities.services[state.router.params.id] && state.entities.services[state.router.params.id].type // || 'base'
     }),
-    createStore: createStore
+    createStore: createStore,
+    theme: customTheme
 };
 
 let store

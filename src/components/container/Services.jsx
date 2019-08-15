@@ -23,25 +23,33 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 import { connectRequest, requestAsync } from 'redux-query';
+import { Box } from 'grommet'
+
 import ServiceApi from '../../apis/ServiceApi'
+import ServiceIndex from './ServiceIndex'
 
 @connect(
     (state, props) => {
         return {
-            services: state.entities.services, //getServices(state),
-            serviceIds: state.entities.serviceIds,
-            serviceType: state.router.params && state.router.params.id && state.entities.services && state.entities.services[state.router.params.id] && state.entities.services[state.router.params.id].serviceType // || 'base'
+            services: state.entities.services || {}, //getServices(state),
+            //serviceIds: state.entities.serviceIds,
+            serviceId: state.router.params && state.router.params.id,
+            serviceType: state.router.params && state.router.params.id && state.entities.services && state.entities.services[state.router.params.id] && state.entities.services[state.router.params.id].serviceType, // || 'base'
+            reloadPending: Object.values(state.queries).some(query => !query.isMutation && query.isPending),
+            queryPending: Object.values(state.queries).some(query => query.isMutation && query.isPending),
+            queryFinished: Object.values(state.queries).some(query => query.isMutation && query.isFinished && (Date.now() - query.lastUpdated < 1500)) && Object.values(state.queries).every(query => /*!query.isMutation || */query.isFinished)
         }
     }
 )
 
 @connectRequest(
     (props) => {
-        if (!props.serviceIds) {
+        /*if (!props.serviceIds) {
             return ServiceApi.getServicesQuery()
-        }
-        console.log('REQ', /*props.serviceIds*/ );
-        return props.serviceIds.map(id => ServiceApi.getServiceQuery(id))
+        }*/
+        console.log('REQ', props.reloadPending, props.queryPending, props.queryFinished);
+        //return props.serviceIds.map(id => ServiceApi.getServiceQuery(id))
+        return ServiceApi.getServicesQuery()
     })
 
 export default class Services extends Component {
@@ -53,7 +61,7 @@ export default class Services extends Component {
     }
 
     render() {
-        const {services, serviceIds, serviceType, children, forceRequest, dispatch, ...rest} = this.props;
+        const { services, serviceIds, serviceId, serviceTypes, serviceType, serviceMenu, urlLevels, getExtendableComponents, children, forceRequest, dispatch, reloadPending, queryPending, queryFinished, ...rest } = this.props;
 
         const updateServices = Object.keys(services).filter(id => services[id].hasBackgroundTask);
 
@@ -64,7 +72,7 @@ export default class Services extends Component {
                 this.timer = null;
                 this.counter++;
                 //forceRequest();
-                updateServices.forEach(id => dispatch(requestAsync(ServiceApi.getServiceQuery(id, true))))
+                updateServices.forEach(id => dispatch(requestAsync(ServiceApi.getServicesQuery(true))))
             }, 1000);
         } else {
             this.counter = 0;
@@ -72,17 +80,25 @@ export default class Services extends Component {
 
         const componentProps = {
             services,
-            serviceIds,
-            serviceType
+            //serviceIds,
+            serviceId,
+            serviceTypes: serviceTypes && serviceTypes.filter(t => t !== 'base'),
+            serviceType,
+            serviceMenu,
+            getExtendableComponents,
+            reloadPending,
+            queryPending,
+            queryFinished
         }
 
         const childrenWithProps = React.Children.map(children,
             (child) => React.cloneElement(child, {}, React.cloneElement(React.Children.only(child.props.children), componentProps))
         );
 
-        return <div>
-                   { childrenWithProps }
-               </div>
+        return <Box fill={true} direction='row' align='end'>
+            {urlLevels <= 2 && <ServiceIndex {...componentProps} compact={urlLevels > 1} />}
+            {childrenWithProps}
+        </Box >
     }
 }
 

@@ -22,7 +22,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import CheckBox from 'grommet/components/CheckBox';
+import { CheckBox, ThemeContext } from 'grommet';
 
 import { handleInputChange } from '../../util'
 
@@ -30,20 +30,32 @@ import { handleInputChange } from '../../util'
 export default class CheckBoxUi extends Component {
 
     _handleInputChange = (event) => {
-        const {onChange, onDebounce} = this.props;
+        const { onChange, onDebounce } = this.props;
 
         handleInputChange(event, onChange, onDebounce);
     }
 
     render() {
-        const {name, checked, smaller, onChange, onDebounce, ...attributes} = this.props;
+        const { name, checked, smaller, onChange, onDebounce, ...attributes } = this.props;
+
+        if (smaller) {
+            return (
+                <ThemeContext.Extend
+                    value={{ checkBox: { size: '18px', toggle: { size: '36px', radius: '18px' } } }}
+                >
+                    <CheckBox name={name}
+                        checked={checked}
+                        onChange={this._handleInputChange}
+                        {...attributes} />
+                </ThemeContext.Extend >
+            );
+        }
 
         return (
-            <CheckBox name={ name }
-                checked={ checked }
-                onChange={ this._handleInputChange }
-                className={ { 'xtraplatform-checkbox-ui': true, 'xtraplatform-full': true, 'xtraplatform-smaller': smaller } }
-                {...attributes}/>
+            <CheckBox name={name}
+                checked={checked}
+                onChange={this._handleInputChange}
+                {...attributes} />
         );
     }
 }

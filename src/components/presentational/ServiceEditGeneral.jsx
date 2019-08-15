@@ -23,68 +23,50 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 
-import Section from 'grommet/components/Section';
-import Form from 'grommet/components/Form';
-import FormFields from 'grommet/components/FormFields';
-import FormField from 'grommet/components/FormField';
-import TextInput from 'grommet/components/TextInput';
-import Accordion from 'grommet/components/Accordion';
-import AccordionPanel from 'grommet/components/AccordionPanel';
+import { Box, Form, FormField, TextInput } from 'grommet'
 
 import TextInputUi from '../common/TextInputUi';
-
-import ServiceEditExtensions from '../presentational/ServiceEditExtensions'
-import ServiceEditTiles from '../presentational/ServiceEditTiles'
-import ServiceEditStyles from '../presentational/ServiceEditStyles'
 
 
 @ui({
     state: {
-        label: (props) => props.service.label
+        label: (props) => props.label
     }
 })
 export default class ServiceEditGeneral extends Component {
 
     _save = () => {
-        const {ui, onChange} = this.props;
+        const { ui, onChange } = this.props;
 
         onChange(ui);
     }
 
     render() {
-        const {service, ui, updateUI} = this.props;
+        const { id, label, ui, updateUI } = this.props;
 
         return (
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                  <Accordion animate={true} multiple={true} active={0}>
-                    <AccordionPanel heading="General">  
-                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                            <FormFields>
-                                <fieldset>
-                                    <FormField label="Id">
-                                        <TextInput name="id" value={ service.id } disabled={ true } />
-                                    </FormField>
-                                    <FormField label="Display name">
-                                        <TextInputUi name="label"
-                                            value={ ui.label }
-                                            onChange={ updateUI }
-                                            onDebounce={ this._save } />
-                                    </FormField>
-                                </fieldset>
-                            </FormFields>
-                        </Form>
-                        <ServiceEditExtensions service={service} onChange={this.props.onChange}/>
-                        <ServiceEditTiles service={service} onChange={this.props.onChange}/>
-                        <ServiceEditStyles service={service} onChange={this.props.onChange} stylesEnabled={typeof this.props.service.extensions.stylesExtension === "undefined"  ? false : this.props.service.extensions.stylesExtension.enabled}/>
-
-                    </AccordionPanel>
-                </Accordion>
-            </Section>
+            <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill="horizontal">
+                <Form>
+                    <FormField label="Id">
+                        <TextInput name="id" value={id} disabled={true} />
+                    </FormField>
+                    <FormField label="Display name">
+                        <TextInputUi name="label"
+                            value={ui.label}
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+                    </FormField>
+                </Form>
+                {/*<ServiceEditExtensions service={service} onChange={this.props.onChange}/>
+                        <ServiceEditTiles service={service} onChange={this.props.onChange}/>*/}
+            </Box>
         );
     }
 }
 
 ServiceEditGeneral.propTypes = {
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired
 };
 

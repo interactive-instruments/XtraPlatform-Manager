@@ -27,50 +27,86 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { requestAsync, updateEntities } from 'redux-query';
+import jwtDecode from 'jwt-decode'
 
-import App from 'grommet/components/App';
-import Split from 'grommet/components/Split';
+import { Box, Grommet } from 'grommet';
+//import Grommet from 'grommet/components/Grommet';
+//import Box from 'grommet/components/Box';
 import NavSidebar from '../presentational/NavSidebar'
 
 import { actions, getTitle, getRoutes, getNavActive } from '../../reducers/app'
+import { actions as serviceActions } from '../../reducers/service'
 
 
-const mapStateToProps = (state /*, props*/ ) => {
+const mapStateToProps = (state /*, props*/) => {
     return {
         //title: getTitle(state),
         //routes: getRoutes(state),
-        navActive: getNavActive(state)
+        navActive: getNavActive(state),
+        authError: state.entities.error
     }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    ...bindActionCreators(actions, dispatch)
+    ...bindActionCreators(actions, dispatch),
+    ...bindActionCreators(serviceActions, dispatch),
+    dispatch
 });
 
 class Manager extends Component {
 
+    _login = (credentials) => {
+        const { dispatch } = this.props;
+
+        dispatch(requestAsync({
+            url: '../rest/auth/arcgis/authorize2',
+            body: JSON.stringify(credentials),
+            options: {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            },
+            update: {
+                token: (prev, next) => { const user = next && jwtDecode(next); return user && user.role != 'USER' && next },
+                error: (prev, next) => { return next ? "Invalid credentials" : 'Not authorized' }
+            }
+        }));
+    }
+
+    _logout = () => {
+        const { clearToken, dispatch } = this.props;
+        console.log('LOGOUT', this.props);
+        dispatch(updateEntities({
+            token: () => null,
+            error: () => null
+        }))
+    }
+
     componentDidMount() {
-        const {applicationName, title} = this.props;
+        const { applicationName, title } = this.props;
 
         document.title = `${applicationName} ${title}`;
     }
 
     render() {
-        const {navToggle, navActive, applicationName, routes, children} = this.props;
+        const { navToggle, navActive, urlLevels, applicationName, logo, routes, theme, user, authError, children } = this.props;
 
-
-        let nav;
-        if (navActive) {
-            nav = <NavSidebar title={ applicationName } routes={ routes } onClose={ navToggle.bind(null, false) } />;
-        }
 
         return (
-            <App centered={ false }>
-                <Split flex="right">
-                    { nav }
-                    { children }
-                </Split>
-            </App>
+            <Grommet full theme={theme}>
+                {user
+                    ? <Box direction="row" fill>
+                        <NavSidebar user={user} onLogout={this._logout} isActive={navActive} isLayer={urlLevels > 1} title={applicationName} logo={logo} routes={routes} onClose={navToggle.bind(null, false)} />
+                        <Box flex fill="vertical">{children}</Box>
+                    </Box>
+                    : <Box direction="row" fill>
+                        <NavSidebar login={true} onLogin={this._login} loginError={authError} isActive={navActive} isLayer={urlLevels > 1} title={applicationName} logo={logo} routes={routes} onClose={navToggle.bind(null, false)} />
+                        <Box flex fill="vertical"></Box>
+                    </Box>
+                }
+            </Grommet>
         );
     }
 }

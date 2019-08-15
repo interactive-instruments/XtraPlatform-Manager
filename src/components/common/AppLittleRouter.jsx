@@ -23,7 +23,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux'
 import { AppContainer } from 'react-hot-loader';
-//import { RouterProvider } from 'redux-little-router';
+import jwtDecode from 'jwt-decode'
 
 import App from './AppFromRoutes'
 
@@ -39,15 +39,18 @@ export const render = (appStore, appConfig) => {
 }
 
 const _render = (Component, store, props) => {
+
     const Connected = connect((state => ({
         urlParams: state.router.params,
-        urlQuery: state.router.query
+        urlQuery: state.router.query,
+        urlLevels: state.router.pathname ? state.router.pathname.indexOf('/users/add') > -1 ? 1 : state.router.pathname.split('/').filter(elem => elem.length).length : 0,
+        user: state.entities.token ? jwtDecode(state.entities.token) : null
     })))(Component)
 
     ReactDOM.render(
         <AppContainer>
-            <Provider store={ store }>
-                <Connected { ...props } />
+            <Provider store={store}>
+                <Connected {...props} />
             </Provider>
         </AppContainer>,
         document.getElementById('app-wrapper')

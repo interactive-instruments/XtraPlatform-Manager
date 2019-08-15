@@ -20,18 +20,17 @@
  */
 
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
+import Header from '../common/Header';
+import { Heading } from 'grommet';
 
 export default class NotFound extends Component {
 
     render() {
 
         return (
-            <Header size='large' pad={ { horizontal: 'medium' } }>
-                <Heading tag="h3" strong={ true }>
+            <Header size='large' pad={{ horizontal: 'medium' }}>
+                <Heading tag="h3" strong={true}>
                     The Page You Requested Could Not Be Found
                 </Heading>
             </Header>

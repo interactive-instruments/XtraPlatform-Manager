@@ -20,24 +20,14 @@
  */
 
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { push } from 'redux-little-router'
 import { mutateAsync, requestAsync } from 'redux-query';
 import ui from 'redux-ui';
-import { reducerEnhancer } from 'redux-ui/src/action-reducer';
 
-import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Footer from 'grommet/components/Footer';
-import Button from 'grommet/components/Button';
-import Form from 'grommet/components/Form';
-import FormFields from 'grommet/components/FormFields';
-import FormField from 'grommet/components/FormField';
-import LinkPreviousIcon from 'grommet/components/icons/base/LinkPrevious';
+import { Box, Text, Button, Form, FormField } from 'grommet';
+import Header from '../common/Header';
+import { ChapterAdd } from 'grommet-icons';
 
 import ServiceApi from '../../apis/ServiceApi'
 import { actions } from '../../reducers/service'
@@ -66,7 +56,7 @@ import uiValidator, { minLength, allowedChars } from '../common/ui-validator';
                 dispatch(mutateAsync(ServiceApi.addServiceQuery(service)))
                     .then((result) => {
                         if (result.status === 200) {
-                            dispatch(requestAsync(ServiceApi.getServiceQuery(service.id)));
+                            //dispatch(requestAsync(ServiceApi.getServiceQuery(service.id)));
                         } else {
                             const error = result.body && result.body.error || {}
                             dispatch(actions.addFailed({
@@ -87,11 +77,11 @@ export default class ServiceAdd extends Component {
 
     _addService = (event) => {
         event.preventDefault();
-        const {ui, addService} = this.props;
+        const { ui, addService } = this.props;
 
         addService({
             ...ui,
-            featureProvider: {
+            /*featureProvider: {
                 providerType: 'WFS',
                 connectionInfo: {
                     uri: ui.url,
@@ -105,50 +95,38 @@ export default class ServiceAdd extends Component {
                 nativeCrs: {
                     code: 4326
                 }
-            }
+            }*/
         });
     }
 
     render() {
-        const {ui, validator, updateUI, addService, children} = this.props;
+        const { ui, validator, updateUI, addService, children } = this.props;
 
         return (
-            <div>
-                <Header pad={ { horizontal: "small", vertical: "medium" } }
-                    justify="between"
-                    size="large"
-                    colorIndex="light-2">
-                    <Box direction="row"
-                        align="center"
-                        pad={ { between: 'small' } }
-                        responsive={ false }>
-                        <Anchor icon={ <LinkPreviousIcon /> } path={ '/services' } a11yTitle="Return" />
-                        <Heading tag="h1" margin="none">
-                            <strong>New Service</strong>
-                        </Heading>
-                    </Box>
-                    { /*sidebarControl*/ }
+            <Box fill={true}>
+                <Header justify='start' border={{ side: 'bottom', size: 'small', color: 'light-4' }}
+                    size="large">
+                    <ChapterAdd />
+                    <Text size='large' weight={500}>New Service</Text>
                 </Header>
-                <Form compact={ false } plain={ true } pad={ { horizontal: 'large', vertical: 'medium' } }>
-                    <FormFields>
-                        <fieldset>
-                            <FormField label="ID"
-                                help="The URL suffix for the new service"
-                                error={ validator.messages.id }
-                                style={ { width: '100%' } }>
-                                <TextInputUi name="id"
-                                    autoFocus
-                                    value={ ui.id }
-                                    onChange={ updateUI } />
-                            </FormField>
-                            { children }
-                        </fieldset>
-                    </FormFields>
-                    <Footer pad={ { "vertical": "medium" } }>
-                        <Button label='Add' primary={ true } onClick={ validator.valid ? this._addService : null } />
-                    </Footer>
-                </Form>
-            </div>
+                <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill={true} overflow={{ vertical: 'auto' }}>
+                    <Box fill="horizontal" flex="grow">
+                        <FormField label="ID"
+                            help="The URL suffix for the new service"
+                            error={validator.messages.id}
+                            style={{ width: '100%' }}>
+                            <TextInputUi name="id"
+                                autoFocus
+                                value={ui.id}
+                                onChange={updateUI} />
+                        </FormField>
+                        {children}
+                        <Box pad={{ "vertical": "medium" }}>
+                            <Button label='Add' primary={true} onClick={validator.valid ? this._addService : null} />
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
         );
     }
 }

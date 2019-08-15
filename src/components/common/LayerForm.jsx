@@ -24,15 +24,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Layer from 'grommet/components/Layer';
-import Box from 'grommet/components/Box';
-import Form from 'grommet/components/Form';
-import FormFields from 'grommet/components/FormFields';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Footer from 'grommet/components/Footer';
-import Button from 'grommet/components/Button';
-import BusyIcon from 'grommet/components/icons/Spinning';
+import { Layer, Box, Form, Heading, Button } from 'grommet';
+
+import Header from './Header';
+//import BusyIcon from 'grommet/components/icons/Spinning';
 
 export default class LayerForm extends Component {
 
@@ -42,43 +37,53 @@ export default class LayerForm extends Component {
     }
 
     render() {
-        const {submitLabel, onClose, title, compact, busy, secondaryControl, titleTag} = this.props;
+        const { submitLabel, onClose, title, compact, busy, secondaryControl, titleTag } = this.props;
         let control;
         if (busy) {
             const label = (true === busy ? '' : busy);
             control = (
-                <Box direction="row" align="center" pad={ { horizontal: 'medium', between: 'small' } }>
-                    <BusyIcon /><span className="secondary">{ label }</span>
+                <Box direction="row" align="center" pad={{ horizontal: 'medium', between: 'small' }}>
+                    {/*<BusyIcon /><span className="secondary">{ label }</span>*/}busy...
                 </Box>
             );
         } else {
             control = (
                 <Button type="submit"
-                    primary={ true }
-                    label={ submitLabel }
-                    onClick={ this._onSubmit } />
+                    primary={true}
+                    label={submitLabel}
+                    onClick={this._onSubmit} />
             );
         }
 
+        const cancel = (
+            <Button
+                label='Cancel'
+                color='status-critical'
+                onClick={onClose} />
+        );
+
         return (
-            <Layer align="right"
-                closer={ true }
-                onClose={ onClose }
-                a11yTitle={ title }>
-                <Form onSubmit={ this._onSubmit } compact={ compact }>
-                    <Header>
-                        <Heading tag={ titleTag } margin='none'>
-                            { title }
-                        </Heading>
-                    </Header>
-                    <FormFields>
-                        { this.props.children }
-                    </FormFields>
-                    <Footer pad={ { vertical: 'medium' } } justify="between">
-                        { control }
-                        { secondaryControl }
-                    </Footer>
-                </Form>
+            <Layer position="right"
+                full='vertical'
+                closer={true}
+                onEsc={onClose}
+                onClickOutside={onClose}>
+                <Box pad='medium'>
+                    <Form onSubmit={this._onSubmit}>
+                        <Header pad={{ horizontal: 'none' }}>
+                            <Heading level='3' margin='none'>
+                                {title}
+                            </Heading>
+                        </Header>
+                        <Box>
+                            {this.props.children}
+                        </Box>
+                        <Box as='footer' direction='row' pad={{ vertical: 'medium' }} gap='medium' justify="end">
+                            {secondaryControl || cancel}
+                            {control}
+                        </Box>
+                    </Form>
+                </Box>
             </Layer>
         );
     }

@@ -23,89 +23,50 @@ import React, { Component } from 'react';
 import ui from 'redux-ui';
 
 
-import Box from 'grommet/components/Box';
-import Heading from 'grommet/components/Heading';
+import { Box } from 'grommet';
 
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
 
-
 @ui({
     state: {
-        service: (props)=> props.service,
-        extensions: (props) => typeof    props.service.extensions === "undefined" ? null : props.service.extensions
+        capabilities: (props) => props.service && props.service.capabilities ? props.service.capabilities : null
     }
 })
 
 export default class ServiceEditExtensions extends Component {
 
     _save = () => {
-        const {ui, onChange} = this.props;
+        const { ui, onChange } = this.props;
 
-        onChange({extensions: ui.extensions});
+        onChange({ capabilities: ui.capabilities });
     }
-    
-   
+
 
     render() {
-        const {service, ui, updateUI} = this.props;
-        if(ui.extensions){
-            var numberOfExtensions=Object.keys(ui.extensions).length
-            var displayExtensionsEnabled=[];
-            console.log(ui.extensions)
-            if(numberOfExtensions!== 0){
-                displayExtensionsEnabled.push(
-                    <Box pad={ {vertical:'small',horizontal:'none'} }>
-                        <Heading tag="h3">
-                            Extensions
-                        </Heading>
-                    </Box>
-        
-                )
-            }
-            console.log(ui.extensions)        
-            for(var i=0; i < numberOfExtensions; i++){
-                var extensionType = Object.values(ui.extensions)[i].extensionType
-                var extensionName = Object.keys(ui.extensions)[i]
-                console.log(extensionName)
+        const { ui, updateUI } = this.props;
 
-                createCheckbox(this._save,displayExtensionsEnabled,extensionName)
-
-            }
-        }
-        
-        function createCheckbox(save,displayExtensionsEnabled,extensionName){
-        
-            return displayExtensionsEnabled.push(
-                <CheckboxUi name={"enabled"}
-                            label={extensionType}
-                            checked={ui.extensions[extensionName].enabled}
-                            onChange={(field, value) =>  updateUI("extensions", 
-                                {...ui.extensions, 
-                                    [extensionName]: {
-                                        ...ui.extensions[extensionName], 
-                                        [field]:value
-                                    }
-                                }
-                            )} 
-                            //(field, value) =>  updateUI('setting', {...ui.setting, [field]: value})
-                            onDebounce={ save }/>  
-            )
-        
-        
-            
-        }
+        const newCapabilities = (type, change) => ui.capabilities.map(ext => ext.extensionType === type ? { ...ext, ...change } : ext)
 
         return (
-            
-            service && 
 
-                <Box pad={ {horizontal:'medium', vertical:'none'} }>
-                    {displayExtensionsEnabled}
-                </Box>
+            ui.capabilities &&
 
-              
-  
+            <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill="horizontal">
+
+                {ui.capabilities.map(ext => <Box pad={{ bottom: 'small' }} key={ext.extensionType}>
+                    <CheckboxUi
+                        toggle={true}
+                        name={"enabled"}
+                        label={ext.extensionType}
+                        checked={ext.enabled}
+                        onChange={(field, value) => updateUI("capabilities", newCapabilities(ext.extensionType, { [field]: value }))}
+                        onDebounce={this._save}
+                    />
+                </Box>)}
+
+            </Box>
+
         );
     }
 }

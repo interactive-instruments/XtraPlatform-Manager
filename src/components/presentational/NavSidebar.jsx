@@ -21,50 +21,132 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import ui from 'redux-ui';
 
-import Box from 'grommet/components/Box';
-import Header from 'grommet/components/Header';
-import Footer from 'grommet/components/Footer';
-import Title from 'grommet/components/Title';
-import Sidebar from 'grommet/components/Sidebar';
-import Menu from 'grommet/components/Menu';
-import Button from 'grommet/components/Button';
-import User from 'grommet/components/icons/base/User';
-import MenuIcon from 'grommet/components/icons/base/Menu';
-import CloseIcon from 'grommet/components/icons/base/Close';
+import { Box, Button, Text, Layer, Image, Form, FormField, ThemeContext, DropButton } from 'grommet';
+import { Menu as MenuIcon, Close as CloseIcon, User } from 'grommet-icons';
 
-//import Logo from './Logo2'
+import Header from '../common/Header';
 import Anchor from '../common/AnchorLittleRouter';
+import TextInputUi from '../common/TextInputUi';
 
+@ui({
+    state: {
+        user: '',
+        password: ''
+    }
+})
 
 export default class NavSidebar extends Component {
+
+    _login = () => {
+        const { ui, onLogin } = this.props;
+        onLogin(ui);
+    }
+
+    _renderMenu = () => {
+        const { title, logo, routes, onClose, isLayer, onLogout, loginError, user, ui, updateUI } = this.props;
+        console.log('USER', user)
+        return (
+            <Box fill="vertical" background="menu">
+                <Header pad={{ right: 'small' }}>
+                    <Box pad={{ left: 'medium' }}>
+                        {logo
+                            ? <Image fit="contain" alignSelf="start" src={logo} />
+                            : <Text size='large' weight={500}>{title}</Text>}
+                        {/*<Button icon={<MenuIcon color="light-6" />}
+                        onClick={onClose}
+                        plain={true}
+                        label={<Text size='large' weight='500'>{title}</Text>}
+        a11yTitle="Close Menu" />*/}
+                    </Box>
+                    {isLayer && <Button icon={<CloseIcon size="medium" />}
+                        onClick={onClose}
+                        plain={true}
+                        a11yTitle="Close Menu" />}
+                </Header>
+                {user
+                    ? <Box justify="around" fill="vertical">
+                        <Box flex='grow' justify='start'>
+                            {routes
+                                .filter(route => !route.roles || route.roles.some(role => role === user.role))
+                                .map((route) => (
+                                    route.menu && <Anchor key={route.path} path={route.path} pad={{ left: 'medium', right: 'xlarge', vertical: 'small' }} onClick={onClose} label={route.title} menu />
+                                ))}
+                        </Box>
+                        <Box pad={{ vertical: 'medium', horizontal: 'small' }}>
+                            <DropButton icon={<User color="light-1" />}
+                                dropAlign={{ bottom: 'top', left: 'left' }}
+                                dropContent={<Box pad="small" gap="small">
+                                    <Box border={{ side: 'bottom', size: 'small' }} pad={{ bottom: 'small' }} align="center">
+                                        <Text weight="bold">{user.sub}</Text>
+                                    </Box>
+                                    <Button onClick={onLogout} plain={true} fill={true} hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button>
+                                </Box>}></DropButton>
+                        </Box>
+                    </Box>
+                    : <ThemeContext.Extend
+                        value={{
+                            formField: {
+                                border: {
+                                    position: 'outer',
+                                    side: 'bottom',
+                                    size: 'small',
+                                    color: 'dark-1'
+                                },
+                                extend: {
+                                    background: 'light-6'
+                                }
+                            }
+                        }}
+                    >
+                        <Box flex='grow' justify='start' pad="medium">
+                            <Form onSubmit={this._login}>
+                                <FormField label="User" background="light-4">
+                                    <TextInputUi name="user"
+                                        autoFocus={true}
+                                        value={ui.user}
+                                        onChange={updateUI} />
+                                </FormField>
+                                <FormField label="Password" error={loginError}>
+                                    <TextInputUi name="password"
+                                        type="password"
+                                        value={ui.password}
+                                        onChange={updateUI} />
+                                </FormField>
+                                <Box pad={{ vertical: 'medium' }}>
+                                    <Button primary label="Login" type="submit" />
+                                </Box>
+                            </Form>
+                        </Box>
+                    </ThemeContext.Extend>
+                }
+            </Box>
+        );
+    }
+
     render() {
-        const {title, routes, onClose} = this.props;
+        const { title, routes, onClose, isLayer, isActive } = this.props;
+
+        if (isLayer) {
+            return isActive
+                ? <Layer
+                    full="vertical"
+                    position="left"
+                    plain={false}
+                    animate={true}
+                    onClickOutside={onClose}
+                    onEsc={onClose}
+                >
+                    {this._renderMenu()}
+                </Layer>
+                : null;
+        }
 
         return (
-            <Sidebar colorIndex='neutral-1' full={ true }>
-                <Header pad='medium' justify='between'>
-                    <Title onClick={ onClose } a11yTitle="Close Menu">
-                        <MenuIcon />
-                        { /*<Logo colorIndex='light-1' size="small" />*/ }
-                        <span>{ title }</span>
-                    </Title>
-                    <Button icon={ <CloseIcon /> }
-                        onClick={ onClose }
-                        plain={ true }
-                        a11yTitle="Close Menu" />
-                </Header>
-                <Box flex='grow' justify='start'>
-                    <Menu fill={ true } primary={ true }>
-                        { routes.map((route) => (
-                              route.menu && <Anchor key={ route.path } path={ route.path } label={ route.title } />
-                          )) }
-                    </Menu>
-                </Box>
-                { /*<Footer pad='medium'>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <Button icon={ <User /> } />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </Footer>*/ }
-            </Sidebar>
+            <Box fill="vertical" basis="1/4">
+                {this._renderMenu()}
+            </Box>
         );
     }
 }

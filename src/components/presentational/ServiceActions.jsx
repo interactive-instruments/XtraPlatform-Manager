@@ -19,52 +19,29 @@
  * for e-Government).
  */
 
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Box from 'grommet/components/Box';
-import Sidebar from 'grommet/components/Sidebar';
-import Menu from 'grommet/components/Menu';
-import Button from 'grommet/components/Button';
-import SkipLinkAnchor from 'grommet/components/SkipLinkAnchor';
-import MapLocation from 'grommet/components/icons/base/MapLocation';
-import CloseIcon from 'grommet/components/icons/base/Close';
-import CommandLineIcon from 'grommet/components/icons/base/Cli';
-import EditIcon from 'grommet/components/icons/base/Edit';
-import PowerIcon from 'grommet/components/icons/base/Power';
-import TrashIcon from 'grommet/components/icons/base/Trash';
+import { Box, Anchor, Paragraph } from 'grommet'
+import { MapLocation, Power as PowerIcon, Trash as TrashIcon, FolderOpen } from 'grommet-icons'
+
 import LayerForm from '../common/LayerForm';
-import Paragraph from 'grommet/components/Paragraph';
-
 import ServiceApi from '../../apis/ServiceApi'
 
 
+export default props => {
 
-export default class ServiceActions extends Component {
+    const [layerOpened, setLayerOpened] = useState(false);
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            layerOpened: false
-        }
+    const _onLayerOpen = () => {
+        setLayerOpened(true);
     }
 
-    _onLayerOpen = () => {
-        this.setState({
-            layerOpened: true
-        });
+    const _onLayerClose = () => {
+        setLayerOpened(false);
     }
 
-    _onLayerClose = () => {
-        this.setState({
-            layerOpened: false
-        });
-    }
-
-    _onPower = (start) => {
-        const {service, updateService} = this.props;
+    const _onPower = (start) => {
+        const { service, updateService } = props;
 
         updateService({
             id: service.id,
@@ -72,102 +49,50 @@ export default class ServiceActions extends Component {
         });
     }
 
-    _onRemove = () => {
-        const {service, removeService} = this.props;
+    const _onRemove = () => {
+        const { service, removeService } = props;
 
         removeService({
             id: service.id
         });
     }
 
-    render() {
-        const {service, onClose} = this.props;
-        const {layerOpened} = this.state;
+    const { service, token } = props;
+    const isOnline = 'STARTED' === service.status;
+    const parameters = service.secured ? `?token=${token}` : ''
 
-        let name;
-        let closeControl;
-        if (onClose) {
-            name = <Heading tag="h3" margin='none'>
-                       { service.name }
-                   </Heading>;
-            closeControl = (
-                <Button icon={ <CloseIcon /> } onClick={ onClose } a11yTitle={ `Close ${service.name}` } />
-            );
-        }
-
-        let stateControls;
-        if ('STARTED' === service.status) {
-            stateControls = [
-                /*<Button key="restart"
-                    align="start"
-                    plain={ true }
-                    icon={ <PowerIcon /> }
-                    label="Restart"
-                    onClick={ this._onLayerOpen.bind(this, 'restart') } />,*/
-                <Button key="powerOff"
-                    align="start"
-                    plain={ true }
-                    icon={ <PowerIcon /> }
-                    label="Power Off"
-                    onClick={ this._onPower.bind(this, false) } />
-            ];
-        } else {
-            stateControls = (
-                <Button align="start"
-                    plain={ true }
-                    icon={ <PowerIcon /> }
-                    label="Power On"
-                    onClick={ this._onPower.bind(this, true) } />
-            );
-        }
-
-        let layer;
-        if (layerOpened) {
-            layer = <LayerForm title="Remove"
-                        submitLabel="Yes, remove"
-                        compact={ true }
-                        onClose={ this._onLayerClose }
-                        onSubmit={ this._onRemove }>
-                        <fieldset>
-                            <Paragraph>
-                                Are you sure you want to remove the service with id <strong>{ service.id }</strong>?
+    return (
+        <Box>
+            <Box direction="row" justify='end'>
+                <Anchor
+                    icon={<PowerIcon />}
+                    title={`${isOnline ? 'Hide' : 'Publish'}`}
+                    color={isOnline ? 'status-ok' : 'status-critical'}
+                    onClick={() => _onPower(!isOnline)} />
+                <Anchor
+                    icon={<MapLocation />}
+                    title="View"
+                    href={`${ServiceApi.VIEW_URL}${service.id}/maps/default${parameters}`}
+                    target="_blank" />
+                <Anchor
+                    icon={<FolderOpen />}
+                    title="Browse"
+                    href={`${ServiceApi.VIEW_URL}${service.id}/${parameters}`}
+                    target="_blank" />
+                <Anchor
+                    icon={<TrashIcon />}
+                    title="Remove"
+                    onClick={_onLayerOpen} />
+            </Box>
+            {layerOpened && <LayerForm title="Remove"
+                submitLabel="Yes, remove"
+                compact={true}
+                onClose={_onLayerClose}
+                onSubmit={_onRemove}>
+                <Paragraph>
+                    Are you sure you want to remove the service with id <strong>{service.id}</strong>?
                             </Paragraph>
-                        </fieldset>
-                    </LayerForm>;
-        }
-
-        return (
-            <Sidebar size="medium" colorIndex="light-2">
-                <SkipLinkAnchor label="Right Panel" />
-                <Header pad={ { horizontal: 'medium', vertical: 'medium' } } justify="between" size="large">
-                    { name }
-                    { closeControl }
-                </Header>
-                <Box pad="medium">
-                    <Menu>
-                        <Button align="start"
-                            plain={ true }
-                            icon={ <MapLocation /> }
-                            label="View"
-                            href={ `${ServiceApi.VIEW_URL}${service.id}/` }
-                            target="_blank" />
-                        { stateControls }
-                        { /*<Button align="start"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            plain={ true }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            icon={ <EditIcon /> }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            label="Edit"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            onClick={ this._onEdit }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            a11yTitle={ `Edit ${service.name} Virtual Machine` } />*/ }
-                        <Button align="start"
-                            plain={ true }
-                            icon={ <TrashIcon /> }
-                            label="Remove"
-                            onClick={ this._onLayerOpen }
-                            a11yTitle={ `Remove service ${service.name}` } />
-                    </Menu>
-                </Box>
-                { layer }
-            </Sidebar>
-        );
-    }
+            </LayerForm>}
+        </Box>
+    );
 }

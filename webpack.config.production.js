@@ -22,7 +22,7 @@ return webpackMerge(commonConfig(env), {
     devtool: 'eval',
 
     plugins: [
-        new CleanWebpackPlugin(['build']),
+        new CleanWebpackPlugin({cleanOnceBeforeBuildPatterns: ['build']}),
 
         new webpack.HashedModuleIdsPlugin(),
 

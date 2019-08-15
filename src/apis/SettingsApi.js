@@ -12,9 +12,9 @@
 const SettingsApi = {
 
 
-    getSettingsQuery: function(){
-        return{
-            url: `/rest/admin/settings/`,
+    getSettingsQuery: function () {
+        return {
+            url: `../rest/admin/settings/`,
             transform: (settingIds) => ({
                 settingIds: settingIds
             }),
@@ -25,11 +25,11 @@ const SettingsApi = {
         }
     },
 
-    getSettingQuery: function(id){
-        return{
-            url: `/rest/admin/settings/${encodeURIComponent(id)}/`,
+    getSettingQuery: function (id) {
+        return {
+            url: `../rest/admin/settings/${encodeURIComponent(id)}/`,
             transform: (setting) => ({
-                setting: {[id]: setting}
+                setting: { [id]: setting }
             }),
             update: {
                 setting: (prev, next) => {
@@ -42,9 +42,9 @@ const SettingsApi = {
         }
     },
 
-    updateSettingQuery: function(id,setting) {
+    updateSettingQuery: function (id, setting) {
         return {
-            url: `rest/admin/settings/${encodeURIComponent(id)}/`,
+            url: `../rest/admin/settings/${encodeURIComponent(id)}/`,
             body: JSON.stringify(setting),
             options: {
                 method: 'POST',

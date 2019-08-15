@@ -23,7 +23,8 @@ export const actions = {
     addService: createAction('service/add'),
     removeService: createAction('service/remove'),
     selectProperty: createAction('property/select'),
-    selectFeatureType: createAction('featureType/select')
+    selectFeatureType: createAction('featureType/select'),
+    clearToken: createAction('token/clear')
 };
 
 
@@ -52,7 +53,8 @@ export default handleActions({
     [actions.addService]: addService,
     [actions.removeService]: removeService,
     [actions.selectProperty]: selectProperty,
-    [actions.selectFeatureType]: selectFeatureType
+    [actions.selectFeatureType]: selectFeatureType,
+    [actions.clearToken]: clearToken
 }, initialState);
 
 
@@ -92,9 +94,9 @@ function fetchedService(state, action) {
             }
         }
     }
-/*return Object.assign({}, state, {
-    entities: action.payload.entities
-})*/
+    /*return Object.assign({}, state, {
+        entities: action.payload.entities
+    })*/
 }
 
 function fetchFailed(state, action) {
@@ -114,7 +116,7 @@ function addFailed(state, action) {
 }
 
 function clearMessage(state, action) {
-    let {[action.payload]: deletedItem, ...rest} = state.messages
+    let { [action.payload]: deletedItem, ...rest } = state.messages
     return {
         ...state,
         messages: rest
@@ -134,6 +136,17 @@ function selectFeatureType(state, action) {
         ...state,
         selectedFeatureType: action.payload,
         selectedProperty: action.payload !== state.selectedFeatureType ? action.payload : state.selectedProperty
+    }
+}
+
+function clearToken(state, action) {
+    let { token, ...rest } = state.entities
+    return {
+        ...state,
+        entities: {
+            ...rest,
+            token: null
+        }
     }
 }
 
@@ -170,7 +183,7 @@ function addService(state, action) {
 }
 
 function removeService(state, action) {
-    let {[action.payload.id]: deletedItem, ...rest} = state.entities.services
+    let { [action.payload.id]: deletedItem, ...rest } = state.entities.services
     return {
         ...state,
         entities: {
@@ -185,6 +198,7 @@ export const getSelectedService = (state) => state.service.selectedService
 export const getSelectedFeatureType = (state) => state.service.selectedFeatureType
 export const getSelectedProperty = (state) => state.service.selectedProperty
 export const getServices = (state) => state.service.entities.services
+export const getToken = (state) => state.entities.token
 export const getService = (state, id) => (id && state.service.entities.services) ? state.service.entities.services[id] : null //state.service.entities.services[state.service.selectedService]
 export const getFeatureTypes = (state, id) => {
     const service = getService(state, id);
@@ -217,7 +231,7 @@ export const getMappingsForFeatureType = (state, id, ftid) => {
     if (featureType && state.service.entities.mappings) {
         for (var i = 0; i < featureType.mappings.length; i++) {
             let mapping = state.service.entities.mappings[featureType.mappings[i]];
-            let {id, index, ...rest} = mapping;
+            let { id, index, ...rest } = mapping;
             mappings[mapping.id] = rest
         }
     }

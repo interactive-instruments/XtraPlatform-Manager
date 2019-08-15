@@ -22,7 +22,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import TextInput from 'grommet/components/TextInput';
+import { TextInput } from 'grommet';
 
 import { handleInputChange } from '../../util'
 
@@ -30,20 +30,20 @@ import { handleInputChange } from '../../util'
 export default class TextInputUi extends Component {
 
     _handleInputChange = (event) => {
-        const {onChange, onDebounce, onValidate, readOnly} = this.props;
+        const { onChange, onDebounce, onValidate, readOnly } = this.props;
 
         if (!readOnly)
             handleInputChange(event, onChange, onDebounce, onValidate);
     }
 
     render() {
-        const {name, value, onChange, onDebounce, onValidate, readOnly, ...attributes} = this.props;
+        const { name, value, onChange, onDebounce, onValidate, readOnly, ...attributes } = this.props;
 
         return (
             <TextInput {...attributes}
-                name={ name }
-                value={ value }
-                onDOMChange={ this._handleInputChange } />
+                name={name}
+                value={value}
+                onChange={this._handleInputChange} />
         );
     }
 }

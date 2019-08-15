@@ -24,45 +24,40 @@ import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 import EditTiles from '../presentational/EditTiles'
 
+const tilesExt = props => props.service.capabilities.find(ext => ext.extensionType === 'TILES')
 
 @ui({
     state: {
-        extensions:(props) => typeof props.service.extensions === "undefined" ? null : props.service.extensions,
-        tiles:(props) => typeof props.service.extensions.tilesExtension ==="undefined" ? null : props.service.extensions.tilesExtension,
+        extensions: (props) => props.service.capabilities ? props.service.capabilities : null,
+        tiles: (props) => tilesExt(props) || null,
         formats: () => [],
-        formatJsonArray: (props) => typeof props.service.extensions.tilesExtension === "undefined" ? true : typeof props.service.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.service.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/json"){
-                    return new Map ([[value, true]]);
+        formatJsonArray: (props) => tilesExt(props) && tilesExt(props).formats ?
+            Object.entries(tilesExt(props).formats).map(([key, value]) => {
+                if (value.toString() === "application/json") {
+                    return new Map([[value, true]]);
                 }
-                else{
-                    return new Map ([[value, false]])
-                }
-            } 
-        ),
-        formatJsonEnabled: () => null,
-        formatMvtArray: (props) => typeof props.service.extensions.tilesExtension === "undefined" ? true : typeof props.service.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.service.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/vnd.mapbox-vector-tile"){
-                    return new Map ([[value, true]])
-                }
-                else{
-                    return new Map ([[value, false]])
+                else {
+                    return new Map([[value, false]])
                 }
             }
-        ),
-        formatMvtEnabled:()=>null,
+            ) : true,
+        formatJsonEnabled: () => null,
+        formatMvtArray: (props) => tilesExt(props) && tilesExt(props).formats ?
+            Object.entries(tilesExt(props).formats).map(([key, value]) => {
+                if (value.toString() === "application/vnd.mapbox-vector-tile") {
+                    return new Map([[value, true]])
+                }
+                else {
+                    return new Map([[value, false]])
+                }
+            }
+            ) : true,
+        formatMvtEnabled: () => null,
 
-        maxZoomLevel:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? 22 : typeof props.service.extensions.tilesExtension.zoomLevels === "undefined" ? 22 :
-        props.service.extensions.tilesExtension.zoomLevels.default.max,
-        minZoomLevel:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? 0 : typeof props.service.extensions.tilesExtension.zoomLevels === "undefined" ? 0 :
-         props.service.extensions.tilesExtension.zoomLevels.default.min,
-        maxSeeding:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? "" :  typeof props.service.extensions.tilesExtension.seeding === "undefined" ? "" : 
-        props.service.extensions.tilesExtension.seeding.default.max,
-        minSeeding:(props) => typeof props.service.extensions.tilesExtension === "undefined" ? "" :  typeof props.service.extensions.tilesExtension.seeding === "undefined" ? "" :
-        props.service.extensions.tilesExtension.seeding.default.min
+        maxZoomLevel: (props) => tilesExt(props) && tilesExt(props).zoomLevels ? tilesExt(props).zoomLevels.default.max : 22,
+        minZoomLevel: (props) => tilesExt(props) && tilesExt(props).zoomLevels ? tilesExt(props).zoomLevels.default.min : 0,
+        maxSeeding: (props) => tilesExt(props) && tilesExt(props).seeding ? tilesExt(props).seeding.default.max : 0,
+        minSeeding: (props) => tilesExt(props) && tilesExt(props).seeding ? tilesExt(props).seeding.default.min : 0,
     }
 })
 
@@ -71,16 +66,16 @@ import EditTiles from '../presentational/EditTiles'
 
 
 export default class ServiceEditTiles extends Component {
-    render(){
-        const {service, ui, updateUI} = this.props;
+    render() {
+        const { service, ui, updateUI } = this.props;
 
-        return(
+        return (
             service
             &&
-            <EditTiles onChange={this.props.onChange} ui={ui} updateUI={updateUI} tilesEnabled={typeof this.props.service.extensions.tilesExtension === "undefined"  ? false : this.props.service.extensions.tilesExtension.enabled}/>
+            <EditTiles onChange={this.props.onChange} ui={ui} updateUI={updateUI} tilesEnabled={ui.tiles && ui.tiles.enabled} />
         );
     }
-    
+
 
 
 

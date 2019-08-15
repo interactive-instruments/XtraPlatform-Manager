@@ -5,18 +5,11 @@ import { connect } from 'react-redux'
 import { connectRequest, mutateAsync, requestAsync } from 'redux-query';
 import { push } from 'redux-little-router'
 
-import Box from 'grommet/components/Box';
-import Heading from 'grommet/components/Heading';
-import Section from 'grommet/components/Section';
-import Paragraph from 'grommet/components/Paragraph';
-import Alert from 'grommet/components/icons/base/Alert';
-import Article from 'grommet/components/Article';
+import { Box, Heading, Paragraph, Accordion, AccordionPanel } from 'grommet';
+import { Alert } from 'grommet-icons';
 
 import SettingsApi from '../../apis/SettingsApi'
 import SettingShow from '../container/SettingShow';
-
-import Accordion from 'grommet/components/Accordion';
-import AccordionPanel from 'grommet/components/AccordionPanel';
 
 
 
@@ -25,7 +18,7 @@ import AccordionPanel from 'grommet/components/AccordionPanel';
     (state, props) => {
         return {
             settingIds: state.entities.settingIds,
-            setting: state.entities.setting 
+            setting: state.entities.setting
         }
     },
     (dispatch) => {
@@ -33,16 +26,16 @@ import AccordionPanel from 'grommet/components/AccordionPanel';
             showSettings: () => {
                 dispatch(push(`/settings`))
             },
-            updateSetting: (id,setting) => {
-                dispatch(mutateAsync( SettingsApi.updateSettingQuery(id,setting)))
+            updateSetting: (id, setting) => {
+                dispatch(mutateAsync(SettingsApi.updateSettingQuery(id, setting)))
                     .then((result) => {
                         if (result.status === 200) {
-                            dispatch(requestAsync( SettingsApi.getSettingQuery(id)));
+                            dispatch(requestAsync(SettingsApi.getSettingQuery(id)));
                         } else {
                             console.log('ERR', result)
                             const error = result.body && result.body.error || {}
 
-                         
+
                         }
 
                     })
@@ -54,47 +47,49 @@ import AccordionPanel from 'grommet/components/AccordionPanel';
 @connectRequest(
     (props) => {
         if (!props.settingIds || !props.settingIds.categories) {
-            return  SettingsApi.getSettingsQuery()
+            return SettingsApi.getSettingsQuery()
         }
         return props.settingIds.categories.map(id => SettingsApi.getSettingQuery(id))
     })
 
-    
+
 export default class Settings extends Component {
-    
-    
-    render(){
+
+
+    render() {
 
         const { settingIds, updateSetting, setting } = this.props;
 
-        var settingsArray=[];
-        if(settingIds && setting){
-            for (var i = 0; i < Object.keys(settingIds.___metadata___).length; i++){
-                settingsArray.push(
-                <AccordionPanel key={i} heading={Object.values(settingIds.___metadata___)[i].label}>
-                    <SettingShow settingId={settingIds.categories[i]} setting={setting[settingIds.categories[i]]} updateSetting={updateSetting}/>
-                </AccordionPanel>)
+        var settingsArray = [];
+        if (settingIds && setting) {
+            for (var i = 0; i < Object.keys(settingIds.___metadata___).length; i++) {
+                var s = setting[settingIds.categories[i]];
+                if (s && settingIds.categories[i] === 'webserver')
+                    settingsArray.push(
+                        <AccordionPanel key={i} label={Object.values(settingIds.___metadata___)[i].label}>
+                            <SettingShow settingId={settingIds.categories[i]} setting={setting[settingIds.categories[i]]} updateSetting={updateSetting} />
+                        </AccordionPanel>)
             }
         }
         return (
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Box pad={ {vertical:'medium', horizontal:"medium"} }>
-                                    <Heading tag="h2">
-                                        Attention
+            <Box as='section' pad={{ vertical: 'medium' }} full="horizontal">
+                <Box pad={{ vertical: 'medium', horizontal: "medium" }}>
+                    <Heading tag="h2">
+                        Attention
                                     </Heading>
-          
-                                    <Paragraph size="large"/*style={{color:"#EB6060"}}*/>
-                                    <Alert />                           
-                                    &nbsp;                          
-                                     Changes at the Settings will not be applied until the server is restarted
+
+                    <Paragraph size="large"/*style={{color:"#EB6060"}}*/>
+                        <Alert />
+                        &nbsp;
+                         Changes to the settings will not be applied until the server is restarted
                                     </Paragraph>
-                                </Box>
+                </Box>
 
                 <Accordion animate={true} multiple={true} >
                     {settingsArray}
                 </Accordion>
-            </Section>
-            );
+            </Box>
+        );
     }
 
 }

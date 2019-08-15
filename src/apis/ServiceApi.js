@@ -15,20 +15,18 @@ const ServiceApi = {
     URL: API_URL,
     VIEW_URL: VIEW_URL,
 
-    getServicesQuery: function() {
+    getServicesQuery: function (reload) {
         return {
             url: `${API_URL}`,
-            transform: (serviceIds) => ({
-                serviceIds: serviceIds
-            }),
+            transform: (services) => normalizeServices(services).entities,
             update: {
-                serviceIds: (prev, next) => next
-            }
-        // TODO: force: true
+                services: (prev, next) => next
+            },
+            force: reload === true
         }
     },
 
-    getServiceQuery: function(id, reload) {
+    getServiceQuery: function (id, reload) {
         return {
             url: `${API_URL}${id}/`,
             transform: (service) => normalizeServices([service]).entities,
@@ -44,20 +42,20 @@ const ServiceApi = {
         }
     },
 
-    getServiceConfigQuery: function(id) {
+    getServiceConfigQuery: function (id, reload) {
         return {
-            url: `${API_URL}${id}/config/`,
+            url: `${API_URL}${id}/`,
             transform: (serviceConfig) => normalizeServiceConfigs([serviceConfig]).entities,
             update: {
                 serviceConfigs: (prev, next) => next,
                 featureTypes: (prev, next) => next,
                 mappings: (prev, next) => next
             },
-            force: true
+            force: reload === true
         }
     },
 
-    addServiceQuery: function(service) {
+    addServiceQuery: function (service) {
         return {
             url: `${API_URL}`,
             body: JSON.stringify(service),
@@ -65,6 +63,15 @@ const ServiceApi = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
+                }
+            },
+            transform: (service) => normalizeServices([service]).entities,
+            update: {
+                services: (prev, next) => {
+                    return {
+                        ...prev,
+                        ...next
+                    }
                 }
             },
             optimisticUpdate: {
@@ -76,20 +83,20 @@ const ServiceApi = {
                         createdAt: Date.now()
                     }
                 })
-            },
+            }/*,
             rollback: {
                 services: (initialValue, currentValue) => {
-                    const {[service.id]: deletedItem, ...rest} = currentValue
+                    const { [service.id]: deletedItem, ...rest } = currentValue
                     return rest;
                 }
-            }
+            }*/
         }
     },
 
-    updateServiceQuery: function(service) {
+    updateServiceQuery: function (serviceId, update) {
         return {
-            url: `${API_URL}${service.id}/`,
-            body: JSON.stringify(service),
+            url: `${API_URL}${serviceId}/`,
+            body: JSON.stringify(update),
             options: {
                 method: 'POST',
                 headers: {
@@ -98,16 +105,16 @@ const ServiceApi = {
             },
             optimisticUpdate: {
                 services: (prev) => Object.assign({}, prev, {
-                    [service.id]: {
-                        ...prev[service.id],
-                        ...service,
+                    [serviceId]: {
+                        ...prev[serviceId],
+                        ...update,
                         dateModified: Date.now()
                     }
                 }),
                 serviceConfigs: (prev) => Object.assign({}, prev, {
-                    [service.id]: {
-                        ...prev[service.id],
-                        ...service,
+                    [serviceId]: {
+                        ...prev[serviceId],
+                        ...update,
                         dateModified: Date.now()
                     }
                 })
@@ -115,7 +122,7 @@ const ServiceApi = {
         }
     },
 
-    deleteServiceQuery: function(service) {
+    deleteServiceQuery: function (service) {
         return {
             url: `${API_URL}${service.id}/`,
             options: {
@@ -127,7 +134,7 @@ const ServiceApi = {
                     delete next[service.id];
                     return next
                 },
-                serviceIds: (prev) => prev.filter(id => id !== service.id)
+                //serviceIds: (prev) => prev.filter(id => id !== service.id)
             }
         }
     }

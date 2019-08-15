@@ -25,7 +25,7 @@ var commonProps = ['id']; // code
 
 var ftProps = commonProps.concat(['name', 'namespace', 'label', 'mappings', 'extent']);
 
-var serviceProps = commonProps.concat(['serviceType', 'label', 'description', 'status', 'featureTypes', 'extensions', 'lastModified', 'createdAt', 'featureProvider', 'hasBackgroundTask', 'progress', 'message']);
+var serviceProps = commonProps.concat(['serviceType', 'label', 'description', 'status', 'featureTypes', 'capabilities', 'lastModified', 'createdAt', 'featureProvider', 'hasBackgroundTask', 'progress', 'message', 'secured']);
 
 function filter(include, exclude, entity, parent) {
     var idFound = false
@@ -68,16 +68,16 @@ function filter(include, exclude, entity, parent) {
                     });
                 }
             }
-        //}
+            //}
         }
 
-    /*entity.mappings = entity.featureProvider.mappings
-    for (var key in entity.mappings) {
-        entity.mappings[key].id = entity.id;
-        if (key !== entity.qn)
-            entity.mappings[key].id += '_' + key;
-        entity.mappings[key].qn = key;
-    }*/
+        /*entity.mappings = entity.featureProvider.mappings
+        for (var key in entity.mappings) {
+            entity.mappings[key].id = entity.id;
+            if (key !== entity.qn)
+                entity.mappings[key].id += '_' + key;
+            entity.mappings[key].qn = key;
+        }*/
     }
     if (wfsFound) {
         entity.nameSpaces = {}
@@ -85,7 +85,7 @@ function filter(include, exclude, entity, parent) {
             var newKey = entity.featureProvider.connectionInfo.namespaces[key];
             entity.nameSpaces[newKey] = key;
         }
-    //delete entity['wfsAdapter'];
+        //delete entity['wfsAdapter'];
     }
     return entity;
 }
@@ -125,28 +125,28 @@ const mappingSchema = new schema.Entity('mappings', {}, {
 const ftSchema = new schema.Entity('featureTypes', {
     mappings: new schema.Array(mappingSchema)
 }, {
-    //idAttribute: (value, parent, key) => key,
-    //idAttribute: (value, parent, key) => parent.id + '_' + value.id,
-    //processStrategy: filter.bind(null, ftProps, [])
-    processStrategy: wrapMapping.bind(null)
-});
+        //idAttribute: (value, parent, key) => key,
+        //idAttribute: (value, parent, key) => parent.id + '_' + value.id,
+        //processStrategy: filter.bind(null, ftProps, [])
+        processStrategy: wrapMapping.bind(null)
+    });
 
 const serviceConfigSchema = new schema.Entity('serviceConfigs', {
     featureTypes: new schema.Array(ftSchema),
-/*featureProvider: {
-    mappings: new schema.Array(ftSchema)
-}*/
+    /*featureProvider: {
+        mappings: new schema.Array(ftSchema)
+    }*/
 }, {
-    processStrategy: filter.bind(null, serviceProps, [])
-});
+        processStrategy: filter.bind(null, serviceProps, [])
+    });
 
 const serviceConfigListSchema = new schema.Array(serviceConfigSchema);
 
 const serviceSchema = new schema.Entity('services', {
     featureTypes: new schema.Array(ftSchema)
 }, {
-    processStrategy: filter.bind(null, serviceProps, [])
-});
+        processStrategy: filter.bind(null, serviceProps, [])
+    });
 
 const serviceListSchema = new schema.Array(serviceSchema);
 
@@ -154,11 +154,11 @@ export default function normalize2(services) {
     return normalize(services, serviceListSchema);
 }
 
-export const normalizeServices = function(services) {
+export const normalizeServices = function (services) {
     return normalize(services, serviceListSchema);
 }
 
-export const normalizeServiceConfigs = function(services) {
+export const normalizeServiceConfigs = function (services) {
     return normalize(services, serviceConfigListSchema);
 }
 

@@ -22,7 +22,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Select from 'grommet/components/Select';
+import {Select} from 'grommet';
 
 import { handleInputChange } from '../../util'
 

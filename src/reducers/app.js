@@ -13,7 +13,8 @@ import { createAction, handleActions } from 'redux-actions';
 // action creators
 export const actions = {
     changeTitle: createAction('app/title'),
-    navToggle: createAction('nav/toggle')
+    navToggle: createAction('nav/toggle'),
+    changeToken: createAction('app/token'),
 };
 
 
@@ -32,12 +33,13 @@ const initialState = {
             component: 'About'
         }*/
     ],
-    navActive: true
+    navActive: false
 }
 
 // reducer
 export default handleActions({
     [actions.changeTitle]: changeTitle,
+    [actions.changeToken]: changeToken,
     [actions.navToggle]: navToggle
 }, initialState);
 
@@ -45,6 +47,13 @@ function changeTitle(state, action) {
     return {
         ...state,
         title: action.payload
+    }
+}
+
+function changeToken(state, action) {
+    return {
+        ...state,
+        token: action.payload
     }
 }
 
@@ -61,3 +70,4 @@ function navToggle(state, action) {
 export const getTitle = (state) => state.app.title
 export const getRoutes = (state) => state.app.routes
 export const getNavActive = (state) => state.app.navActive
+export const getToken = (state) => state.app.token

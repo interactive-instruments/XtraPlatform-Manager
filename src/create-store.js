@@ -13,7 +13,8 @@ import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 
 import { routerForHash, initializeCurrentLocation, replace } from 'redux-little-router';
 import { routesToLittleRouter } from './util'
-//import { persistStore } from 'redux-persist'
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 //import { createFilter } from 'redux-persist-transform-filter';
 //import createActionBuffer from 'redux-action-buffer'
 
@@ -25,18 +26,37 @@ import { entitiesReducer, queriesReducer, queryMiddleware } from 'redux-query';
 import * as reducers from './reducers'
 //import rootSaga from './sagas'
 
-export default function(routes, data) {
+const persistConfig = {
+    key: 'entities',
+    storage,
+    //whitelist: ['token']
+}
+
+const rootPersistConfig = {
+    key: 'root',
+    storage: storage,
+    whitelist: ['entities']
+}
+
+const authPersistConfig = {
+    key: 'auth',
+    storage: storage,
+    whitelist: ['token']
+}
+
+
+export default function (routes, data) {
     //console.log(routesToLittleRouter(routes));
-    const {reducer: routerReducer, middleware: routerMiddleware, enhancer: routerEnhancer} = routerForHash({
+    const { reducer: routerReducer, middleware: routerMiddleware, enhancer: routerEnhancer } = routerForHash({
         routes: routesToLittleRouter(routes),
-    //basename: '/manager'
+        //basename: '/manager'
     })
 
     const combine = (reds) => combineReducers({
         ...reds,
         router: routerReducer,
         ui: uiReducer,
-        entities: entitiesReducer,
+        entities: persistReducer(authPersistConfig, entitiesReducer),
         queries: queriesReducer,
     })
 
@@ -47,9 +67,11 @@ export default function(routes, data) {
 
     const queriesMiddleware = queryMiddleware((state) => state.queries, (state) => state.entities)
 
+    //const persistedReducer = persistReducer(rootPersistConfig, reducer)
+
     //const initMiddleware = createActionBuffer(appActions.initApp.toString());
 
-    const middleware = [ /*sagaMiddleware,*/ routerMiddleware, queriesMiddleware /*, initMiddleware*/ ];
+    const middleware = [ /*sagaMiddleware,*/ routerMiddleware, queriesMiddleware /*, initMiddleware*/];
 
     // Be sure to ONLY add this middleware in development!
     //if (process.env.NODE_ENV !== 'production')
@@ -62,9 +84,11 @@ export default function(routes, data) {
         composeWithDevTools(
             routerEnhancer,
             applyMiddleware(...middleware),
-        // other store enhancers if any
+            // other store enhancers if any
         )
     );
+
+    let persistor = persistStore(store)
 
     if (module && module.hot) {
         // Enable Webpack hot module replacement for reducers

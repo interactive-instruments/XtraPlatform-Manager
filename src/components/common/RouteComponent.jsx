@@ -60,6 +60,8 @@ export default class RouteComponent extends Component {
             }
         }
 
+        console.log('RC', componentProps, route)
+
         return (
             <RouteComp {...componentProps}>
                 { children }
