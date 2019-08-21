@@ -23,7 +23,7 @@ import React, { Component } from 'react';
 import { Text, Box } from 'grommet';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
-import EditTiles from '../presentational/EditTiles'
+import EditTiles from './EditTiles'
 
 const tilesExt = props => props.capabilities.find(ext => ext.extensionType === 'TILES')
 

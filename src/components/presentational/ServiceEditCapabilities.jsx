@@ -23,51 +23,49 @@ import React, { Component } from 'react';
 import ui from 'redux-ui';
 
 
-import { Box } from 'grommet';
+import Box from 'grommet/components/Box';
+import Heading from 'grommet/components/Heading';
+import FormField from 'grommet/components/FormField';
 
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
 
 @ui({
     state: {
-        capabilities: (props) => props.capabilities || null
+        //service: (props) => props.service,
+        capabilities: (props) => props.capabilities
     }
 })
 
-export default class ServiceEditExtensions extends Component {
+export default class ServiceEditCapabilities extends Component {
 
     _save = () => {
         const { ui, onChange } = this.props;
 
-        onChange({ capabilities: ui.capabilities });
+        onChange(ui);
     }
-
 
     render() {
         const { ui, updateUI } = this.props;
 
-        const newCapabilities = (type, change) => ui.capabilities.map(ext => ext.extensionType === type ? { ...ext, ...change } : ext)
-
         return (
-
             ui.capabilities &&
-
-            <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill="horizontal">
-
-                {ui.capabilities.map(ext => <Box pad={{ bottom: 'small' }} key={ext.extensionType}>
-                    <CheckboxUi
-                        toggle={true}
-                        name={"enabled"}
-                        label={ext.extensionType}
-                        checked={ext.enabled}
-                        onChange={(field, value) => updateUI("capabilities", newCapabilities(ext.extensionType, { [field]: value }))}
-                        onDebounce={this._save}
-                    />
-                </Box>)}
-
-            </Box>
-
+            <FormField label="Capabilities">
+                {ui.capabilities.map(ext => <CheckboxUi
+                    key={ext.extensionType}
+                    className={{ "xtraplatform-flex": true }}
+                    name="enabled"
+                    label={ext.extensionType}
+                    checked={ext.enabled}
+                    toggle={true}
+                    reverse={true}
+                    smaller={true}
+                    onChange={(field, value) => updateUI("capabilities",
+                        ui.capabilities.filter(ext2 => ext2.extensionType !== ext.extensionType)
+                            .concat({ ...ext, [field]: value })
+                            .sort((a, b) => a.extensionType < b.extensionType ? -1 : a.extensionType === b.extensionType ? 0 : 1))}
+                    onDebounce={this._save} />)}
+            </FormField>
         );
     }
 }
-

@@ -12,6 +12,12 @@ td {
 		width: 100%;
 	}
 
+	&.xtraplatform-flex {
+		width: 80%;
+		display: flex;
+		justify-content: space-between;
+	}
+
 	&.xtraplatform-smaller {
 		.grommetux-check-box__control {
 			width: round($control-size * 1.33);
