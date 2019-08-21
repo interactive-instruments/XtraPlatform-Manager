@@ -30,7 +30,7 @@ import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
 @ui({
     state: {
-        capabilities: (props) => props.service && props.service.capabilities ? props.service.capabilities : null
+        capabilities: (props) => props.capabilities || null
     }
 })
 

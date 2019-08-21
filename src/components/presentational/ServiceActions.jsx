@@ -69,11 +69,11 @@ export default props => {
                     title={`${isOnline ? 'Hide' : 'Publish'}`}
                     color={isOnline ? 'status-ok' : 'status-critical'}
                     onClick={() => _onPower(!isOnline)} />
-                <Anchor
+                {/*<Anchor
                     icon={<MapLocation />}
                     title="View"
                     href={`${ServiceApi.VIEW_URL}${service.id}/maps/default${parameters}`}
-                    target="_blank" />
+                target="_blank" />*/}
                 <Anchor
                     icon={<FolderOpen />}
                     title="Browse"

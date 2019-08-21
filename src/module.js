@@ -59,7 +59,6 @@ export const app = {
                 ]
             },
             {},
-            {},
             {
                 path: '/settings',
                 component: Settings,
@@ -85,8 +84,8 @@ export const app = {
     extendableComponents: {
         ServiceEdit: {
             General: ServiceEditGeneral,
-            //Api: ServiceEditExtensions,
-            //Tiles: ServiceEditTiles
+            Api: ServiceEditExtensions,
+            Tiles: ServiceEditTiles
         }
     },
     serviceMenu: [],

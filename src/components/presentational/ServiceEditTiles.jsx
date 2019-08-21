@@ -20,15 +20,16 @@
  */
 
 import React, { Component } from 'react';
+import { Text, Box } from 'grommet';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 import EditTiles from '../presentational/EditTiles'
 
-const tilesExt = props => props.service.capabilities.find(ext => ext.extensionType === 'TILES')
+const tilesExt = props => props.capabilities.find(ext => ext.extensionType === 'TILES')
 
 @ui({
     state: {
-        extensions: (props) => props.service.capabilities ? props.service.capabilities : null,
+        extensions: (props) => props.capabilities || null,
         tiles: (props) => tilesExt(props) || null,
         formats: () => [],
         formatJsonArray: (props) => tilesExt(props) && tilesExt(props).formats ?
@@ -67,12 +68,12 @@ const tilesExt = props => props.service.capabilities.find(ext => ext.extensionTy
 
 export default class ServiceEditTiles extends Component {
     render() {
-        const { service, ui, updateUI } = this.props;
+        const { ui, updateUI } = this.props;
 
         return (
-            service
-            &&
-            <EditTiles onChange={this.props.onChange} ui={ui} updateUI={updateUI} tilesEnabled={ui.tiles && ui.tiles.enabled} />
+            ui.tiles && ui.tiles.enabled
+                ? <EditTiles onChange={this.props.onChange} ui={ui} updateUI={updateUI} tilesEnabled={ui.tiles && ui.tiles.enabled} />
+                : <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill="horizontal"><Text>Disabled</Text></Box>
         );
     }
 

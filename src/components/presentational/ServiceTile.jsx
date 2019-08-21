@@ -25,9 +25,8 @@ import PropTypes from 'prop-types';
 import { Box, Text, Heading, Meter } from 'grommet';
 import StatusIcon from '../common/StatusIcon';
 import Spinning from '../common/Spinning';
-
-
 import Tile from '../common/Tile'
+import ServiceTask from './ServiceTask'
 
 export default class ServiceTile extends PureComponent {
 
@@ -35,16 +34,7 @@ export default class ServiceTile extends PureComponent {
     const { id, label, status, hasBackgroundTask, message, progress, changeLocation, selected, compact, small } = this.props;
 
     console.log('MSG', message, progress, hasBackgroundTask)
-    let status1 = hasBackgroundTask ? <Box>
-      <Meter type='bar'
-        margin={{ vertical: 'small' }}
-        thickness='small'
-        values={[{
-          value: progress,
-          color: 'brand'
-        }]} />
-      <Text size="small">{message}</Text>
-    </Box> : null; // item.status === 'INITIALIZING' ? 'Initializing' : (item.status === 'STARTED' ? 'Online' : 'Offline');
+    let status1 = hasBackgroundTask ? <ServiceTask progress={progress} message={message} /> : null; // item.status === 'INITIALIZING' ? 'Initializing' : (item.status === 'STARTED' ? 'Online' : 'Offline');
     let icon1 = ''; // item.status === 'INITIALIZING' ? <Spinning size="medium" style={ { verticalAlign: 'middle', marginRight: '6px' } } /> : <StatusIcon value={ item.status === 'STARTED' ? 'ok' : 'critical' } size="medium" />
     let status2 = status === 'INITIALIZING' ? 'Initializing' : (status === 'STARTED' ? 'Published' : 'Offline');
     let icon2 = status === 'INITIALIZING'

@@ -31,6 +31,7 @@ import { LinkPrevious as LinkPreviousIcon, More as MoreIcon, Globe } from 'gromm
 
 import ServiceActions from '../presentational/ServiceActions';
 import ServiceEditGeneral from '../presentational/ServiceEditGeneral';
+import ServiceTask from '../presentational/ServiceTask'
 import Anchor from '../common/AnchorLittleRouter';
 import Header from '../common/Header';
 import Notification from '../common/Notification';
@@ -189,6 +190,7 @@ export default class Service extends Component {
                                 {service.label}
                             </Heading>
                         </Box>
+                        {service.hasBackgroundTask && <ServiceTask progress={service.progress} message={service.message} />}
                         <ServiceActions service={service}
                             token={token}
                             onClose={onSidebarClose}
