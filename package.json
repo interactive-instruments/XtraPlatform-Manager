@@ -9,7 +9,8 @@
     "build": "webpack -p --config webpack.config.production.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "license": "node node_modules/jsheader/index.js ./jsheader.json",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "preinstall": "node ./patch-yarn.js"
   },
   "author": "interactive instruments GmbH",
   "license": "EUPL-1.2",
