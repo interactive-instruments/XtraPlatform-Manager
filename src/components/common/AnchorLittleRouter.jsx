@@ -29,10 +29,10 @@ import { Anchor, Box, Text } from 'grommet';
 import styled from "styled-components";
 
 const StyledBox = styled(Box)`
-    background-color: ${props => props.isActive ? props.theme.global.colors.active : 'transparent'};
+    background-color: ${props => props.isActive ? props.theme.menu.active.color : 'transparent'};
 
     &:hover {
-        background-color: ${props => { console.log('THB', props); return props.theme.global.colors.active }};
+        background-color: ${props => { console.log('THB', props); return props.theme.menu.active.color }};
     }
 `;
 

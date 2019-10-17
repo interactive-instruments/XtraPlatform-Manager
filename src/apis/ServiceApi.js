@@ -108,6 +108,7 @@ const ServiceApi = {
                     [serviceId]: {
                         ...prev[serviceId],
                         ...update,
+                        status: update.shouldStart === true ? 'STARTED' : update.shouldStart === false ? 'STOPPED' : prev[serviceId].status,
                         dateModified: Date.now()
                     }
                 }),

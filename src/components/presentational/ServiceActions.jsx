@@ -28,7 +28,7 @@ import LayerForm from '../common/LayerForm';
 import ServiceApi from '../../apis/ServiceApi'
 
 
-export default props => {
+const ServiceActions = props => {
 
     const [layerOpened, setLayerOpened] = useState(false);
 
@@ -41,44 +41,36 @@ export default props => {
     }
 
     const _onPower = (start) => {
-        const { service, updateService } = props;
+        const { updateService } = props;
 
         updateService({
-            id: service.id,
             shouldStart: start
         });
     }
 
     const _onRemove = () => {
-        const { service, removeService } = props;
+        const { id, removeService } = props;
 
         removeService({
-            id: service.id
+            id: id
         });
     }
 
-    const { service, token } = props;
-    const isOnline = 'STARTED' === service.status;
-    const parameters = service.secured ? `?token=${token}` : ''
+    const { id, status, shouldStart, secured, token, ViewActions } = props;
+    const isOnline = 'STARTED' === status;
+    const isDisabled = !isOnline && shouldStart;
+    const parameters = secured ? `?token=${token}` : ''
 
     return (
-        <Box>
+        <Box flex={false}>
             <Box direction="row" justify='end'>
                 <Anchor
                     icon={<PowerIcon />}
                     title={`${isOnline ? 'Hide' : 'Publish'}`}
                     color={isOnline ? 'status-ok' : 'status-critical'}
-                    onClick={() => _onPower(!isOnline)} />
-                {/*<Anchor
-                    icon={<MapLocation />}
-                    title="View"
-                    href={`${ServiceApi.VIEW_URL}${service.id}/maps/default${parameters}`}
-                target="_blank" />*/}
-                <Anchor
-                    icon={<FolderOpen />}
-                    title="Browse"
-                    href={`${ServiceApi.VIEW_URL}${service.id}/${parameters}`}
-                    target="_blank" />
+                    onClick={() => _onPower(!isOnline)}
+                    disabled={isDisabled} />
+                <ViewActions id={id} isOnline={isOnline} parameters={parameters} />
                 <Anchor
                     icon={<TrashIcon />}
                     title="Remove"
@@ -90,9 +82,13 @@ export default props => {
                 onClose={_onLayerClose}
                 onSubmit={_onRemove}>
                 <Paragraph>
-                    Are you sure you want to remove the service with id <strong>{service.id}</strong>?
+                    Are you sure you want to remove the service with id <strong>{id}</strong>?
                             </Paragraph>
             </LayerForm>}
         </Box>
     );
 }
+
+ServiceActions.displayName = 'ServiceActions'
+
+export default ServiceActions

@@ -1,16 +1,21 @@
-import { grommet } from "grommet/themes";
+import { grommet, base } from "grommet/themes";
 import { deepMerge } from "grommet/utils";
 import { css } from 'styled-components';
 
 export const customTheme = deepMerge(grommet, {
     global: {
         colors: {
-            active: "rgba(0,0,0,0.15)",
+            active: base.global.colors.brand,
             menu: "neutral-3",
             content: "white"
         },
         edgeSize: {
             xxlarge: '192px'
+        }
+    },
+    menu: {
+        active: {
+            color: "rgba(0,0,0,0.15)",
         }
     },
     anchor: {

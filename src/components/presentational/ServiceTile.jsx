@@ -47,7 +47,7 @@ export default class ServiceTile extends PureComponent {
     return (
       <Tile align="start"
         direction="column"
-        basis={compact || small ? 'full' : '1/3'}
+        basis={compact || small ? 'auto' : '1/3'}
         fill={compact || small ? 'horizontal' : false}
         onClick={() => changeLocation({ pathname: `/services/${id}` }, { persistQuery: true })}
         selected={selected}
@@ -59,8 +59,8 @@ export default class ServiceTile extends PureComponent {
         <Box fill="horizontal"
           textSize="small">
           <Box direction="row" justify="between" align="center" fill="horizontal">
-            <Text size='small' weight='bold' color='dark-6' style={{ textTransform: 'uppercase' }}>
-              {id}
+            <Text size='small' weight='bold' color='dark-6' truncate={true}>
+              {id}{compact && ` - ${label}`}
             </Text>
             <span title={status2}>{icon2}</span>
           </Box>

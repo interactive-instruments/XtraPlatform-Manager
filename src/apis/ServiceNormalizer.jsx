@@ -25,7 +25,7 @@ var commonProps = ['id']; // code
 
 var ftProps = commonProps.concat(['name', 'namespace', 'label', 'mappings', 'extent']);
 
-var serviceProps = commonProps.concat(['serviceType', 'label', 'description', 'status', 'featureTypes', 'capabilities', 'lastModified', 'createdAt', 'featureProvider', 'hasBackgroundTask', 'progress', 'message', 'secured']);
+var serviceProps = commonProps.concat(['serviceType', 'label', 'description', 'status', 'featureTypes', 'capabilities', 'lastModified', 'createdAt', 'featureProvider', 'hasBackgroundTask', 'progress', 'message', 'secured', 'shouldStart']);
 
 function filter(include, exclude, entity, parent) {
     var idFound = false

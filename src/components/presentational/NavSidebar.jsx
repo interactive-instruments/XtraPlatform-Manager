@@ -75,14 +75,16 @@ export default class NavSidebar extends Component {
                                 ))}
                         </Box>
                         <Box pad={{ vertical: 'medium', horizontal: 'small' }}>
-                            {/*<DropButton icon={<User color="light-1" />}
+                            <DropButton icon={<User color="light-1" />}
                                 dropAlign={{ bottom: 'top', left: 'left' }}
                                 dropContent={<Box pad="small" gap="small">
-                                    <Box border={{ side: 'bottom', size: 'small' }} pad={{ bottom: 'small' }} align="center">
+                                    <Box border={{ side: 'bottom', size: 'small' }} pad={{ bottom: 'small' }} align="center" flex={false}>
                                         <Text weight="bold">{user.sub}</Text>
                                     </Box>
-                                    <Button onClick={onLogout} plain={true} fill={true} hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button>
-                                </Box>}></DropButton>*/}
+                                    <Box flex={false}>
+                                        <Button onClick={onLogout} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button>
+                                    </Box>
+                                </Box>}></DropButton>
                         </Box>
                     </Box>
                     : <ThemeContext.Extend

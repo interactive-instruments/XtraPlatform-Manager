@@ -96,11 +96,7 @@ class Manager extends Component {
 
         return (
             <Grommet full theme={theme}>
-                <Box direction="row" fill>
-                    <NavSidebar user={user} isActive={navActive} isLayer={urlLevels > 1} title={applicationName} logo={logo} routes={routes} onClose={navToggle.bind(null, false)} />
-                    <Box flex fill="vertical">{children}</Box>
-                </Box>
-                {/*user
+                {user
                     ? <Box direction="row" fill>
                         <NavSidebar user={user} onLogout={this._logout} isActive={navActive} isLayer={urlLevels > 1} title={applicationName} logo={logo} routes={routes} onClose={navToggle.bind(null, false)} />
                         <Box flex fill="vertical">{children}</Box>
@@ -109,7 +105,7 @@ class Manager extends Component {
                         <NavSidebar login={true} onLogin={this._login} loginError={authError} isActive={navActive} isLayer={urlLevels > 1} title={applicationName} logo={logo} routes={routes} onClose={navToggle.bind(null, false)} />
                         <Box flex fill="vertical"></Box>
                     </Box>
-                */}
+                }
             </Grommet>
         );
     }

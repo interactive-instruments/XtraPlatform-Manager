@@ -39,6 +39,7 @@ import StatusIcon from '../common/StatusIcon';
 
 import { push } from 'redux-little-router'
 import { actions, getToken, getSelectedService, getService, getFeatureTypes } from '../../reducers/service'
+import NotificationWithCollapsibleDetails from '../common/NotificationWithCollapsibleDetails';
 
 
 
@@ -130,21 +131,21 @@ export default class Service extends Component {
 
     _onTabSelect = (label) => {
         const { service, dispatch } = this.props;
-        dispatch(dispatch(push(
+        dispatch(push(
             {
                 pathname: '/services/' + service.id,
                 query: {
                     tab: label
                 }
-            })))
+            }))
     }
 
     render() {
-        const { service, children, updateService, deleteService, getExtendableComponents, urlQuery, token, reloadPending, queryPending } = this.props;
+        const { service, children, updateService, deleteService, getTypedComponent, getExtendableComponents, urlQuery, token, reloadPending, queryPending } = this.props;
         console.log('loading service ', service ? service.id : 'none');
 
         const editTabs = getExtendableComponents('ServiceEdit');
-        const selectedTab = urlQuery && urlQuery.tab && Object.keys(editTabs).findIndex(label => label === urlQuery.tab);
+        const selectedTab = urlQuery && urlQuery.tab && Math.max(Object.keys(editTabs).findIndex(label => label === urlQuery.tab), 0);
 
         let onSidebarClose;
         if ('single' === this.props.responsive) {
@@ -155,6 +156,24 @@ export default class Service extends Component {
         }
 
         const isOnline = service && 'STARTED' === service.status;
+
+        const ViewActions = getTypedComponent('ServiceActionsView', 'default');
+
+        //TODO: featureProvider is not known here, create generic error interface in service
+        let mappingError;
+        const mappingStatus = service && service.featureProvider && service.featureProvider.mappingStatus;
+        if (mappingStatus && mappingStatus.enabled && !mappingStatus.supported && mappingStatus.errorMessage) {
+            mappingError = <Box pad="small" flex={false}>
+                <NotificationWithCollapsibleDetails
+                    size="medium"
+                    pad="medium"
+                    margin={{ bottom: 'small' }}
+                    status="critical"
+                    message={mappingStatus.errorMessage}
+                    details={mappingStatus.errorMessageDetails} />
+            </Box>
+        }
+
 
         return (
             service ? /*<Animate
@@ -187,15 +206,20 @@ export default class Service extends Component {
                                 margin="none"
                                 strong={true}
                                 truncate={true}>
-                                {service.label}
+                                {service.id} - {service.label}
                             </Heading>
                         </Box>
                         {service.hasBackgroundTask && <ServiceTask progress={service.progress} message={service.message} />}
-                        <ServiceActions service={service}
+                        <ServiceActions
+                            id={service.id}
+                            status={service.status}
+                            shouldStart={service.shouldStart}
+                            secured={service.secured}
                             token={token}
                             onClose={onSidebarClose}
-                            updateService={updateService}
-                            removeService={deleteService} />
+                            updateService={this._onChange}
+                            removeService={deleteService}
+                            ViewActions={ViewActions} />
                     </Header>
                     <Tabs justify='start' margin={{ top: 'small' }} activeIndex={selectedTab} onActive={index => this._onTabSelect(Object.keys(editTabs)[index])}>
                         {editTabs &&
@@ -203,7 +227,8 @@ export default class Service extends Component {
                                 const Edit = editTabs[tab];
                                 return <Tab title={tab} key={tab} >
                                     <Box fill={true} overflow={{ vertical: 'auto' }}>
-                                        <Edit {...service} key={service.id} onChange={this._onChange} />
+                                        {mappingError}
+                                        <Edit {...service} key={service.id} token={token} onChange={this._onChange} />
                                     </Box>
                                 </Tab>
                             })

@@ -22,10 +22,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
+import { resolve } from "uri-js";
 
 import { Box, Form, FormField, TextInput } from 'grommet'
 
 import TextInputUi from '../common/TextInputUi';
+import ServiceApi from '../../apis/ServiceApi';
 
 
 @ui({
@@ -48,7 +50,10 @@ export default class ServiceEditGeneral extends Component {
             <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill="horizontal">
                 <Form>
                     <FormField label="Id">
-                        <TextInput name="id" value={id} disabled={true} />
+                        <TextInput name="id" value={id} readOnly={true} />
+                    </FormField>
+                    <FormField label="Url">
+                        <TextInput name="url" value={`${resolve(window.location.href, ServiceApi.VIEW_URL)}${id}`} readOnly={true} />
                     </FormField>
                     <FormField label="Display name">
                         <TextInputUi name="label"

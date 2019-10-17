@@ -7,7 +7,6 @@
  */
 import Manager from './components/container/Manager'
 import Services from './components/container/Services'
-import ServiceIndex from './components/container/ServiceIndex'
 import ServiceShow from './components/container/Service'
 import ServiceAdd from './components/container/ServiceAdd'
 import NotFound from './components/presentational/NotFound'
@@ -18,8 +17,6 @@ import { render as renderApp } from './components/common/AppLittleRouter'
 import createStore from './create-store'
 import { customTheme } from './theme'
 import ServiceEditGeneral from './components/presentational/ServiceEditGeneral';
-import ServiceEditExtensions from './components/presentational/ServiceEditExtensions';
-import ServiceEditTiles from './components/presentational/ServiceEditTiles';
 
 // TODO: wrap config editing components under ServiceEdit 
 
@@ -59,6 +56,7 @@ export const app = {
                 ]
             },
             {},
+            {},
             {
                 path: '/settings',
                 component: Settings,
@@ -79,13 +77,14 @@ export const app = {
         },
         ServiceShow: {
             WFS3: ServiceShow
+        },
+        ServiceActionsView: {
+            default: () => null
         }
     },
     extendableComponents: {
         ServiceEdit: {
             General: ServiceEditGeneral,
-            Api: ServiceEditExtensions,
-            Tiles: ServiceEditTiles
         }
     },
     serviceMenu: [],

@@ -261,8 +261,8 @@ class ServiceIndex extends Component {
         let label = <Text size='large' weight={500}>Services</Text>;
         let icon;
         if (compact) {
-            navControl = <Anchor onClick={navToggle.bind(null, true)} icon={<MenuIcon />} />;
-            label = <Anchor path={{ pathname: '/services' }} label={label} />
+            navControl = <Anchor onClick={navToggle.bind(null, true)} icon={<MenuIcon />} title="Show menu" />;
+            label = <Anchor path={{ pathname: '/services' }} label={label} title="Go back to services" />
             icon = <LoadSaveIndicator loading={reloadPending || queryPending} success={queryFinished} />
         } else {
             navControl = <Multiple />
