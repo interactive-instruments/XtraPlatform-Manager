@@ -82,7 +82,7 @@ export default class NavSidebar extends Component {
                                         <Text weight="bold">{user.sub}</Text>
                                     </Box>
                                     <Box flex={false}>
-                                        <Button onClick={onLogout} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button>
+                                        {!user.dummy && <Button onClick={onLogout} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button>}
                                     </Box>
                                 </Box>}></DropButton>
                         </Box>

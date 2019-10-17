@@ -44,7 +44,7 @@ const _render = (Component, store, props) => {
         urlParams: state.router.params,
         urlQuery: state.router.query,
         urlLevels: state.router.pathname ? state.router.pathname.indexOf('/users/add') > -1 ? 1 : state.router.pathname.split('/').filter(elem => elem.length).length : 0,
-        user: state.entities.token ? jwtDecode(state.entities.token) : null
+        user: state.entities.token ? jwtDecode(state.entities.token) : props.user
     })))(Component)
 
     ReactDOM.render(
