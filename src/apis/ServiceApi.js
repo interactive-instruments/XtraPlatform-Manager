@@ -6,44 +6,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { normalizeServices, normalizeServiceConfigs } from './ServiceNormalizer'
+import { secureQuery } from './AuthApi'
 
 const API_URL = '../rest/admin/services/';
 const VIEW_URL = '../rest/services/';
+
+export const DEFAULT_OPTIONS = {
+    forceReload: false,
+    secured: true,
+}
 
 const ServiceApi = {
 
     URL: API_URL,
     VIEW_URL: VIEW_URL,
 
-    getServicesQuery: function (reload) {
-        return {
+    getServicesQuery: (options = DEFAULT_OPTIONS) => {
+        const query = {
             url: `${API_URL}`,
             transform: (services) => normalizeServices(services).entities,
             update: {
                 services: (prev, next) => next
             },
-            force: reload === true
+            force: options.forceReload === true
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 
-    getServiceQuery: function (id, reload) {
-        return {
-            url: `${API_URL}${id}/`,
-            transform: (service) => normalizeServices([service]).entities,
-            update: {
-                services: (prev, next) => {
-                    return {
-                        ...prev,
-                        ...next
-                    }
-                }
-            },
-            force: reload === true
-        }
-    },
-
-    getServiceConfigQuery: function (id, reload) {
-        return {
+    getServiceQuery: (id, options = DEFAULT_OPTIONS) => {
+        const query = {
             url: `${API_URL}${id}/`,
             transform: (serviceConfig) => normalizeServiceConfigs([serviceConfig]).entities,
             update: {
@@ -51,12 +43,14 @@ const ServiceApi = {
                 featureTypes: (prev, next) => next,
                 mappings: (prev, next) => next
             },
-            force: reload === true
+            force: options.forceReload === true
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 
-    addServiceQuery: function (service) {
-        return {
+    addServiceQuery: (service, options = DEFAULT_OPTIONS) => {
+        const query = {
             url: `${API_URL}`,
             body: JSON.stringify(service),
             options: {
@@ -91,10 +85,12 @@ const ServiceApi = {
                 }
             }*/
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 
-    updateServiceQuery: function (serviceId, update) {
-        return {
+    updateServiceQuery: (serviceId, update, options = DEFAULT_OPTIONS) => {
+        const query = {
             url: `${API_URL}${serviceId}/`,
             body: JSON.stringify(update),
             options: {
@@ -109,22 +105,24 @@ const ServiceApi = {
                         ...prev[serviceId],
                         ...update,
                         status: update.shouldStart === true ? 'STARTED' : update.shouldStart === false ? 'STOPPED' : prev[serviceId].status,
-                        dateModified: Date.now()
+                        lastModified: Date.now()
                     }
                 }),
                 serviceConfigs: (prev) => Object.assign({}, prev, {
                     [serviceId]: {
                         ...prev[serviceId],
                         ...update,
-                        dateModified: Date.now()
+                        lastModified: Date.now()
                     }
                 })
             }
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 
-    deleteServiceQuery: function (service) {
-        return {
+    deleteServiceQuery: (service, options = DEFAULT_OPTIONS) => {
+        const query = {
             url: `${API_URL}${service.id}/`,
             options: {
                 method: 'DELETE'
@@ -138,6 +136,8 @@ const ServiceApi = {
                 //serviceIds: (prev) => prev.filter(id => id !== service.id)
             }
         }
+
+        return options.secured ? secureQuery(query) : query
     }
 }
 

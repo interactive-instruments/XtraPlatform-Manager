@@ -91,7 +91,7 @@ function filter(include, exclude, entity, parent) {
 }
 
 function wrapMapping(entity, parent) {
-    console.log(entity, parent);
+    //console.log(entity, parent);
 
     /*if (!entity.hasOwnProperty('id')) {
         var newEntity = {
@@ -110,7 +110,7 @@ function wrapMapping(entity, parent) {
 }
 
 function addId(entity, parent) {
-    console.log(entity, parent);
+    //console.log(entity, parent);
 
     return entity;
 }
@@ -125,11 +125,11 @@ const mappingSchema = new schema.Entity('mappings', {}, {
 const ftSchema = new schema.Entity('featureTypes', {
     mappings: new schema.Array(mappingSchema)
 }, {
-        //idAttribute: (value, parent, key) => key,
-        //idAttribute: (value, parent, key) => parent.id + '_' + value.id,
-        //processStrategy: filter.bind(null, ftProps, [])
-        processStrategy: wrapMapping.bind(null)
-    });
+    //idAttribute: (value, parent, key) => key,
+    //idAttribute: (value, parent, key) => parent.id + '_' + value.id,
+    //processStrategy: filter.bind(null, ftProps, [])
+    processStrategy: wrapMapping.bind(null)
+});
 
 const serviceConfigSchema = new schema.Entity('serviceConfigs', {
     featureTypes: new schema.Array(ftSchema),
@@ -137,16 +137,16 @@ const serviceConfigSchema = new schema.Entity('serviceConfigs', {
         mappings: new schema.Array(ftSchema)
     }*/
 }, {
-        processStrategy: filter.bind(null, serviceProps, [])
-    });
+    processStrategy: filter.bind(null, serviceProps, [])
+});
 
 const serviceConfigListSchema = new schema.Array(serviceConfigSchema);
 
 const serviceSchema = new schema.Entity('services', {
     featureTypes: new schema.Array(ftSchema)
 }, {
-        processStrategy: filter.bind(null, serviceProps, [])
-    });
+    processStrategy: filter.bind(null, serviceProps, [])
+});
 
 const serviceListSchema = new schema.Array(serviceSchema);
 

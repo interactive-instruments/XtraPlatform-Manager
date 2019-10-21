@@ -33,7 +33,8 @@ import ServiceApi from '../../apis/ServiceApi'
 import { actions } from '../../reducers/service'
 import TextInputUi from '../common/TextInputUi';
 import Anchor from '../common/AnchorLittleRouter';
-import uiValidator, { minLength, allowedChars } from '../common/ui-validator';
+import uiValidator, { minLength, maxLength, allowedChars } from '../common/ui-validator';
+import { withAppConfig } from 'xtraplatform-manager/src/app-context'
 
 
 @ui({
@@ -43,8 +44,10 @@ import uiValidator, { minLength, allowedChars } from '../common/ui-validator';
 })
 
 @uiValidator({
-    id: [minLength(3), allowedChars('A-Za-z0-9-_')]
+    id: [minLength(3), maxLength(32), allowedChars('A-Za-z0-9-_')]
 })
+
+@withAppConfig()
 
 @connect(
     (state, props) => {
@@ -53,10 +56,10 @@ import uiValidator, { minLength, allowedChars } from '../common/ui-validator';
     (dispatch) => {
         return {
             addService: (service) => {
-                dispatch(mutateAsync(ServiceApi.addServiceQuery(service)))
+                dispatch(mutateAsync(ServiceApi.addServiceQuery(service, { secured: props.appConfig.secured })))
                     .then((result) => {
                         if (result.status === 200) {
-                            //dispatch(requestAsync(ServiceApi.getServiceQuery(service.id)));
+
                         } else {
                             const error = result.body && result.body.error || {}
                             dispatch(actions.addFailed({

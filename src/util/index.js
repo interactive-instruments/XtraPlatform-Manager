@@ -7,6 +7,16 @@
  */
 let _timers = {}
 
+export const getCookieValue = (name) => {
+    var value = document.cookie.match(`(^|[^;]+)\\s*${name}\\s*=\\s*([^;]+)`);
+    return value ? value.pop() : '';
+}
+
+export const deleteCookie = (name) => {
+    const cookie = `${name}=; Max-Age=0; path=/; domain=${location.hostname}`;
+    document.cookie = cookie
+}
+
 //TODO add support for arrays in select fields, at the Moment only Objects
 export const handleInputChange = (event, onChange, onDebounce, onValidate, timeout = 1000) => {
     if (event) {

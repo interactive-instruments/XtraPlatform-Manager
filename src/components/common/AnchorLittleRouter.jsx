@@ -32,7 +32,7 @@ const StyledBox = styled(Box)`
     background-color: ${props => props.isActive ? props.theme.menu.active.color : 'transparent'};
 
     &:hover {
-        background-color: ${props => { console.log('THB', props); return props.theme.menu.active.color }};
+        background-color: ${props => props.theme.menu.active.color};
     }
 `;
 
@@ -42,6 +42,22 @@ const NoPadding = styled(Box)`
         ${props =>
         props.iconSize &&
         `height: ${props.theme.icon.size[props.iconSize]};`}
+
+        /*&:hover {
+            & svg {
+                stroke: ${props => props.theme.global.colors.active};
+            }
+        }*/
+    }
+`;
+
+const Default = styled(Box)`
+    & a {
+        &:hover {
+            & svg {
+                stroke: ${props => props.theme.global.colors.active};
+            }
+        }
     }
 `;
 
@@ -100,10 +116,12 @@ export default class AnchorLittleRouter extends Component {
 
 
         return (
-            <Anchor {...rest}
-                label={label}
-                href={path}
-                as={Link} />
+            <Default>
+                <Anchor {...rest}
+                    label={label}
+                    href={path}
+                    as={Link} />
+            </Default>
         );
     }
 }

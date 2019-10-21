@@ -26,13 +26,13 @@ export default class RouteComponent extends Component {
 
     _cleanRoutes = (routes = []) => {
         return routes.map(route => {
-            const {component, components, ...rest} = route;
+            const { component, components, ...rest } = route;
             return rest;
         })
     }
 
     _getComponentProps = () => {
-        const {typedComponents, route, children, ...rest} = this.props;
+        const { typedComponents, route, children, ...rest } = this.props;
 
         return {
             ...rest,
@@ -42,7 +42,7 @@ export default class RouteComponent extends Component {
     }
 
     render() {
-        const {urlQuery: {type}, serviceType, typedComponents, route, children} = this.props;
+        const { urlQuery: { type }, serviceType, typedComponents, route, children } = this.props;
 
         let componentProps = {}
         let RouteComp = 'div'
@@ -60,11 +60,13 @@ export default class RouteComponent extends Component {
             }
         }
 
-        console.log('RC', componentProps, route)
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('RC', componentProps, route)
+        }
 
         return (
             <RouteComp {...componentProps}>
-                { children }
+                {children}
             </RouteComp>
         )
     }

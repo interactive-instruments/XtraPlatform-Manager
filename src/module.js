@@ -17,6 +17,7 @@ import { render as renderApp } from './components/common/AppLittleRouter'
 import createStore from './create-store'
 import { customTheme } from './theme'
 import ServiceEditGeneral from './components/presentational/ServiceEditGeneral';
+import { checkAuth } from './apis/AuthApi'
 
 // TODO: wrap config editing components under ServiceEdit 
 
@@ -94,7 +95,8 @@ export const app = {
         //serviceType: state.router.params && state.router.params.id && state.entities.services && state.entities.services[state.router.params.id] && state.entities.services[state.router.params.id].type // || 'base'
     }),
     createStore: createStore,
-    theme: customTheme
+    theme: customTheme,
+    secured: true
 };
 
 let store
@@ -104,6 +106,7 @@ const initialData = {
     entities: {
         services: {
         },
+        token: checkAuth()
     }
 }
 

@@ -23,10 +23,20 @@ import React, { useState } from 'react';
 
 import { Box, Anchor, Paragraph } from 'grommet'
 import { MapLocation, Power as PowerIcon, Trash as TrashIcon, FolderOpen } from 'grommet-icons'
+import styled from 'styled-components'
 
 import LayerForm from '../common/LayerForm';
 import ServiceApi from '../../apis/ServiceApi'
 
+const Power = styled(Box)`
+    & a {
+        &:hover {
+            & svg {
+                stroke: ${props => props.theme.global.colors[props.hoverColor]};
+            }
+        }
+    }
+`
 
 const ServiceActions = props => {
 
@@ -64,12 +74,14 @@ const ServiceActions = props => {
     return (
         <Box flex={false}>
             <Box direction="row" justify='end'>
-                <Anchor
-                    icon={<PowerIcon />}
-                    title={`${isOnline ? 'Hide' : 'Publish'}`}
-                    color={isOnline ? 'status-ok' : 'status-critical'}
-                    onClick={() => _onPower(!isOnline)}
-                    disabled={isDisabled} />
+                <Power hoverColor={isOnline ? 'status-critical' : isDisabled ? 'status-critical' : 'status-ok'}>
+                    <Anchor
+                        icon={<PowerIcon />}
+                        title={`${isOnline ? 'Hide' : isDisabled ? 'Defective' : 'Publish'}`}
+                        color={isOnline ? 'status-ok' : isDisabled ? 'status-critical' : 'status-disabled'}
+                        onClick={() => _onPower(!isOnline)}
+                        disabled={isDisabled} />
+                </Power>
                 <ViewActions id={id} isOnline={isOnline} parameters={parameters} />
                 <Anchor
                     icon={<TrashIcon />}

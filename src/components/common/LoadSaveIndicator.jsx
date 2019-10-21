@@ -7,4 +7,4 @@ import Spinning from './Spinning'
 import StatusIcon from './StatusIcon'
 
 export default props => props.loading ? <Spinning /> :
-    props.success ? <Box animation={{ type: "fadeOut", duration: 2000 }}><StatusIcon value="ok" /></Box> : <Blank />
+    props.success ? <Box animation={{ type: "fadeOut", duration: 2000, delay: 1000 }}><StatusIcon value="ok" /></Box> : <Blank />

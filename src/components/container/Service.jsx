@@ -40,11 +40,12 @@ import StatusIcon from '../common/StatusIcon';
 import { push } from 'redux-little-router'
 import { actions, getToken, getSelectedService, getService, getFeatureTypes } from '../../reducers/service'
 import NotificationWithCollapsibleDetails from '../common/NotificationWithCollapsibleDetails';
+import { withAppConfig } from '../../app-context'
 
-
+@withAppConfig()
 
 @connectRequest(
-    (props) => ServiceApi.getServiceConfigQuery(props.urlParams.id, true)
+    (props) => ServiceApi.getServiceQuery(props.urlParams.id, { forceReload: true, secured: props.appConfig.secured })
 )
 
 
@@ -58,42 +59,34 @@ import NotificationWithCollapsibleDetails from '../common/NotificationWithCollap
             token: getToken(state),
         }
     },
-    (dispatch) => {
+    (dispatch, props) => {
         return {
             ...bindActionCreators(actions, dispatch),
             dispatch,
             updateService: (serviceId, update) => {
                 // TODO: return updated service on POST request
-                dispatch(mutateAsync(ServiceApi.updateServiceQuery(serviceId, update)))
+                dispatch(mutateAsync(ServiceApi.updateServiceQuery(serviceId, update, { secured: props.appConfig.secured })))
                     .then((result) => {
                         if (result.status === 200) {
-                            //dispatch(requestAsync(ServiceApi.getServiceQuery(service.id, true)));
-                            //dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id, true)));
+
                         } else {
-                            console.log('ERR', result)
-                            const error = result.body && result.body.error || {}
-
-                            // TODO: rollback ui
-
-                            /*dispatch(actions.addFailed({
-                                ...service,
-                                ...error,
-                                text: 'Failed to add service with id ' + service.id,
-                                status: 'critical'
-                            }))*/
+                            if (process.env.NODE_ENV !== 'production') {
+                                console.log('ERR', result)
+                                const error = result.body && result.body.error || {}
+                            }
                         }
                     })
-
-                //dispatch(push('/services'))
             },
             deleteService: (service) => {
-                dispatch(mutateAsync(ServiceApi.deleteServiceQuery(service)))
+                dispatch(mutateAsync(ServiceApi.deleteServiceQuery(service, { secured: props.appConfig.secured })))
                     .then((result) => {
                         if (result.status === 200) {
                             dispatch(requestAsync(ServiceApi.getServicesQuery()));
                         } else {
-                            console.log('ERR', result)
-                            const error = result.body && result.body.error || {}
+                            if (process.env.NODE_ENV !== 'production') {
+                                console.log('ERR', result)
+                                const error = result.body && result.body.error || {}
+                            }
                         }
                     })
 
@@ -142,7 +135,10 @@ export default class Service extends Component {
 
     render() {
         const { service, children, updateService, deleteService, getTypedComponent, getExtendableComponents, urlQuery, token, reloadPending, queryPending } = this.props;
-        console.log('loading service ', service ? service.id : 'none');
+
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('loading service ', service ? service.id : 'none');
+        }
 
         const editTabs = getExtendableComponents('ServiceEdit');
         const selectedTab = urlQuery && urlQuery.tab && Math.max(Object.keys(editTabs).findIndex(label => label === urlQuery.tab), 0);
@@ -205,8 +201,9 @@ export default class Service extends Component {
                             <Heading level="3"
                                 margin="none"
                                 strong={true}
-                                truncate={true}>
-                                {service.id} - {service.label}
+                                truncate={true}
+                                title={`${service.label} [${service.id}]`}>
+                                {service.label}
                             </Heading>
                         </Box>
                         {service.hasBackgroundTask && <ServiceTask progress={service.progress} message={service.message} />}

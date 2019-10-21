@@ -19,34 +19,29 @@
  * for e-Government).
  */
 
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import ui from 'redux-ui';
 
-import { Box, Button, Text, Layer, Image, Form, FormField, ThemeContext, DropButton } from 'grommet';
-import { Menu as MenuIcon, Close as CloseIcon, User } from 'grommet-icons';
+import { Box, Button, Text, Layer, Image } from 'grommet';
+import { Close as CloseIcon } from 'grommet-icons';
 
 import Header from '../common/Header';
-import Anchor from '../common/AnchorLittleRouter';
-import TextInputUi from '../common/TextInputUi';
+import NavLogin from './NavLogin';
+import NavMenu from './NavMenu';
+import NavUser from './NavUser';
+import NavChangePassword from './NavChangePassword';
 
-@ui({
-    state: {
-        user: '',
-        password: ''
-    }
-})
 
-export default class NavSidebar extends Component {
+const NavSidebar = ({ title, logo, routes, onClose, isLayer, isActive, loginError, loginExpired, user, secured, onLogin, onLogout, onChangePassword }) => {
 
-    _login = () => {
-        const { ui, onLogin } = this.props;
-        onLogin(ui);
-    }
+    const [isChangePassword, setChangePassword] = useState(false);
 
-    _renderMenu = () => {
-        const { title, logo, routes, onClose, isLayer, onLogout, loginError, user, ui, updateUI } = this.props;
-        console.log('USER', user)
+    const renderMenu = () => {
+
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('USER', user)
+        }
+
         return (
             <Box fill="vertical" background="menu">
                 <Header pad={{ right: 'small' }}>
@@ -65,93 +60,46 @@ export default class NavSidebar extends Component {
                         plain={true}
                         a11yTitle="Close Menu" />}
                 </Header>
-                {user
-                    ? <Box justify="around" fill="vertical">
-                        <Box flex='grow' justify='start'>
-                            {routes
-                                .filter(route => !route.roles || route.roles.some(role => role === user.role))
-                                .map((route) => (
-                                    route.menu && <Anchor key={route.path} path={route.path} pad={{ left: 'medium', right: 'xlarge', vertical: 'small' }} onClick={onClose} label={route.title} menu />
-                                ))}
-                        </Box>
-                        <Box pad={{ vertical: 'medium', horizontal: 'small' }}>
-                            <DropButton icon={<User color="light-1" />}
-                                dropAlign={{ bottom: 'top', left: 'left' }}
-                                dropContent={<Box pad="small" gap="small">
-                                    <Box border={{ side: 'bottom', size: 'small' }} pad={{ bottom: 'small' }} align="center" flex={false}>
-                                        <Text weight="bold">{user.sub}</Text>
-                                    </Box>
-                                    <Box flex={false}>
-                                        {!user.dummy && <Button onClick={onLogout} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button>}
-                                    </Box>
-                                </Box>}></DropButton>
-                        </Box>
-                    </Box>
-                    : <ThemeContext.Extend
-                        value={{
-                            formField: {
-                                border: {
-                                    position: 'outer',
-                                    side: 'bottom',
-                                    size: 'small',
-                                    color: 'dark-1'
-                                },
-                                extend: {
-                                    background: 'light-6'
-                                }
-                            }
-                        }}
-                    >
-                        <Box flex='grow' justify='start' pad="medium">
-                            <Form onSubmit={this._login}>
-                                <FormField label="User" background="light-4">
-                                    <TextInputUi name="user"
-                                        autoFocus={true}
-                                        value={ui.user}
-                                        onChange={updateUI} />
-                                </FormField>
-                                <FormField label="Password" error={loginError}>
-                                    <TextInputUi name="password"
-                                        type="password"
-                                        value={ui.password}
-                                        onChange={updateUI} />
-                                </FormField>
-                                <Box pad={{ vertical: 'medium' }}>
-                                    <Button primary label="Login" type="submit" />
-                                </Box>
-                            </Form>
-                        </Box>
-                    </ThemeContext.Extend>
+                {(!secured && !user)
+                    ? <></>
+                    : (user
+                        ? user.changePassword || isChangePassword
+                            ? <NavChangePassword name={user.sub} onCancel={() => setChangePassword(false)} onChange={onChangePassword} />
+                            : <Box justify="around" fill="vertical">
+                                <NavMenu routes={routes} role={user.role} onClose={onClose} />
+                                <NavUser name={user.sub} onChangePassword={secured && (() => setChangePassword(true))} onLogout={secured && onLogout} />
+                            </Box>
+                        : <NavLogin loginError={loginError} loginExpired={loginExpired} onLogin={onLogin} />)
                 }
             </Box>
         );
     }
 
-    render() {
-        const { title, routes, onClose, isLayer, isActive } = this.props;
 
-        if (isLayer) {
-            return isActive
-                ? <Layer
-                    full="vertical"
-                    position="left"
-                    plain={false}
-                    animate={true}
-                    onClickOutside={onClose}
-                    onEsc={onClose}
-                >
-                    {this._renderMenu()}
-                </Layer>
-                : null;
-        }
 
-        return (
-            <Box fill="vertical" basis="1/4">
-                {this._renderMenu()}
-            </Box>
-        );
+    if (isLayer) {
+        return isActive
+            ? <Layer
+                full="vertical"
+                position="left"
+                plain={false}
+                animate={true}
+                onClickOutside={onClose}
+                onEsc={onClose}
+            >
+                {renderMenu()}
+            </Layer>
+            : null;
     }
+
+    return (
+        <Box fill="vertical" basis="1/4">
+            {renderMenu()}
+        </Box>
+    );
 }
+
+NavSidebar.displayName = 'NavSidebar';
 
 NavSidebar.propTypes = {
     routes: PropTypes.arrayOf(PropTypes.shape({
@@ -161,3 +109,5 @@ NavSidebar.propTypes = {
     onClose: PropTypes.func,
     title: PropTypes.string
 }
+
+export default NavSidebar

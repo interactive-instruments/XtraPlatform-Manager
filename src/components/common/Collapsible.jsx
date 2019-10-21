@@ -45,7 +45,9 @@ class Collapsible extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log('COLLT', this.props.theme, prevProps.theme)
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('COLLT', this.props.theme, prevProps.theme)
+        }
         const {
             /* eslint-disable-next-line react/prop-types */
             direction,

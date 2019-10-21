@@ -20,7 +20,9 @@
  */
 
 import { app, render } from './module.js'
-//import './scss/default/index'
 
-console.log('HELLO', app)
+if (process.env.NODE_ENV !== 'production') {
+    console.log('HELLO', app, process.env.NODE_ENV)
+}
+
 render(app);

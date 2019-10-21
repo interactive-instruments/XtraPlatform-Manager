@@ -27,6 +27,9 @@ import { Box } from 'grommet'
 
 import ServiceApi from '../../apis/ServiceApi'
 import ServiceIndex from './ServiceIndex'
+import { withAppConfig } from '../../app-context'
+
+@withAppConfig()
 
 @connect(
     (state, props) => {
@@ -44,12 +47,10 @@ import ServiceIndex from './ServiceIndex'
 
 @connectRequest(
     (props) => {
-        /*if (!props.serviceIds) {
-            return ServiceApi.getServicesQuery()
-        }*/
-        console.log('REQ', props.reloadPending, props.queryPending, props.queryFinished);
-        //return props.serviceIds.map(id => ServiceApi.getServiceQuery(id))
-        return ServiceApi.getServicesQuery()
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('REQ', props.reloadPending, props.queryPending, props.queryFinished);
+        }
+        return ServiceApi.getServicesQuery({ secured: props.appConfig.secured })
     })
 
 export default class Services extends Component {
@@ -61,18 +62,21 @@ export default class Services extends Component {
     }
 
     render() {
-        const { services, serviceIds, serviceId, serviceTypes, serviceType, serviceMenu, urlLevels, getExtendableComponents, children, forceRequest, dispatch, reloadPending, queryPending, queryFinished, ...rest } = this.props;
+        const { services, serviceIds, serviceId, serviceTypes, serviceType, serviceMenu, urlLevels, getExtendableComponents, children, forceRequest, dispatch, reloadPending, queryPending, queryFinished, appConfig, ...rest } = this.props;
 
         const updateServices = Object.keys(services).filter(id => services[id].hasBackgroundTask);
 
         if (!this.timer && this.counter < 30 && updateServices.length > 0) {
-            console.log('UP');
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('UP');
+            }
             this.timer = setTimeout(() => {
-                console.log('UPPED');
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log('UPPED');
+                }
                 this.timer = null;
                 this.counter++;
-                //forceRequest();
-                updateServices.forEach(id => dispatch(requestAsync(ServiceApi.getServicesQuery(true))))
+                dispatch(requestAsync(ServiceApi.getServicesQuery({ forceReload: true, secured: appConfig.secured })))
             }, 1000);
         } else {
             this.counter = 0;

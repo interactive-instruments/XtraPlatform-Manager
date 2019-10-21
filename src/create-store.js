@@ -8,41 +8,14 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 
-//import { routerReducer, routerMiddleware } from 'react-router-redux'
-//import { hashHistory as history } from 'react-router'
-
 import { routerForHash, initializeCurrentLocation, replace } from 'redux-little-router';
 import { routesToLittleRouter } from './util'
-import { persistStore, persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
-//import { createFilter } from 'redux-persist-transform-filter';
-//import createActionBuffer from 'redux-action-buffer'
 
-//import createSagaMiddleware from 'redux-saga'
 import { reducer as uiReducer } from 'redux-ui'
 import { entitiesReducer, queriesReducer, queryMiddleware } from 'redux-query';
 
 
 import * as reducers from './reducers'
-//import rootSaga from './sagas'
-
-const persistConfig = {
-    key: 'entities',
-    storage,
-    //whitelist: ['token']
-}
-
-const rootPersistConfig = {
-    key: 'root',
-    storage: storage,
-    whitelist: ['entities']
-}
-
-const authPersistConfig = {
-    key: 'auth',
-    storage: storage,
-    whitelist: ['token']
-}
 
 
 export default function (routes, data) {
@@ -56,22 +29,14 @@ export default function (routes, data) {
         ...reds,
         router: routerReducer,
         ui: uiReducer,
-        entities: persistReducer(authPersistConfig, entitiesReducer),
+        entities: entitiesReducer,
         queries: queriesReducer,
     })
 
     const reducer = combine(reducers)
 
-    //const routerMiddleware2 = routerMiddleware(history)
-    //const sagaMiddleware = createSagaMiddleware()
-
     const queriesMiddleware = queryMiddleware((state) => state.queries, (state) => state.entities)
-
-    //const persistedReducer = persistReducer(rootPersistConfig, reducer)
-
-    //const initMiddleware = createActionBuffer(appActions.initApp.toString());
-
-    const middleware = [ /*sagaMiddleware,*/ routerMiddleware, queriesMiddleware /*, initMiddleware*/];
+    const middleware = [routerMiddleware, queriesMiddleware];
 
     // Be sure to ONLY add this middleware in development!
     //if (process.env.NODE_ENV !== 'production')
@@ -87,8 +52,6 @@ export default function (routes, data) {
             // other store enhancers if any
         )
     );
-
-    let persistor = persistStore(store)
 
     if (module && module.hot) {
         // Enable Webpack hot module replacement for reducers
@@ -110,27 +73,3 @@ export default function (routes, data) {
 
     return store
 }
-
-/*
-const persistingStore = persistStore(store, {
-    keyPrefix: 'PMT.',
-    debounce: 1000,
-    whitelist: ['auth', 'app'],
-    transforms: [
-        createFilter(
-            'app',
-            ['useThreePaneView', 'useSmallerFont', 'menuOpen', 'flattenInheritance', 'flattenOninas', 'busy']
-        )
-    ]
-}, () => {
-    // ...after creating your store
-    const initialLocation = store.getState().router;
-    if (initialLocation) {
-        //TODO
-        setTimeout(function() {
-            store.dispatch(initializeCurrentLocation(initialLocation));
-        }, 500)
-
-    }
-});
-*/

@@ -140,12 +140,12 @@ function selectFeatureType(state, action) {
 }
 
 function clearToken(state, action) {
-    let { token, ...rest } = state.entities
     return {
         ...state,
         entities: {
-            ...rest,
-            token: null
+            ...state.entities,
+            token: null,
+            error: null
         }
     }
 }

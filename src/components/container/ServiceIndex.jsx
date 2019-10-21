@@ -24,7 +24,7 @@ import { connect } from 'react-redux'
 import { push } from 'redux-little-router'
 
 import { Box, Text, Button, DropButton, Menu, Anchor as Anchor2, ResponsiveContext } from 'grommet';
-import { Add as AddIcon, Menu as MenuIcon, More as MoreIcon, Multiple, Blank } from 'grommet-icons';
+import { Add as AddIcon, Menu as MenuIcon, More as MoreIcon, Multiple, Revert } from 'grommet-icons';
 
 import ServiceTile from '../presentational/ServiceTile';
 import NotificationWithCollapsibleDetails from '../common/NotificationWithCollapsibleDetails';
@@ -71,12 +71,16 @@ class ServiceIndex extends Component {
             category: 'virtual-machines',
             sort: 'modified:desc'
         }));*/
-        console.log('loading services ...');
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('loading services ...');
+        }
     }
 
     componentWillUnmount() {
         //this.props.dispatch(unloadIndex());
-        console.log('unloading services ...');
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('unloading services ...');
+        }
     }
 
     _onSearch(event) {
@@ -87,13 +91,17 @@ class ServiceIndex extends Component {
         });
         /*const query = new Query(searchText);
         this.props.dispatch(queryIndex(index, query));*/
-        console.log(searchText);
+        if (process.env.NODE_ENV !== 'production') {
+            console.log(searchText);
+        }
     }
 
     _onMore() {
         const { index } = this.props;
         //this.props.dispatch(moreIndex(index));
-        console.log('getting more services ...');
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('getting more services ...');
+        }
     }
 
     _onFilterActivate() {
@@ -110,11 +118,16 @@ class ServiceIndex extends Component {
 
     _renderSection(label, items = [], onMore, compact, small, serviceId) {
         const { messages, clearMessage, push } = this.props;
-        console.log('-----');
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('-----');
+        }
         const tiles = Object.keys(items).sort(function (a, b) {
             return items[a].createdAt < items[b].createdAt ? 1 : -1
         }).map(key => {
-            console.log(key); return key;
+            if (process.env.NODE_ENV !== 'production') {
+                console.log(key);
+            }
+            return key;
         }).map((key, index) => (
             <ServiceTile key={key} selected={key === serviceId} compact={compact} small={small} changeLocation={push} {...items[key]} />
         ));
@@ -262,7 +275,7 @@ class ServiceIndex extends Component {
         let icon;
         if (compact) {
             navControl = <Anchor onClick={navToggle.bind(null, true)} icon={<MenuIcon />} title="Show menu" />;
-            label = <Anchor path={{ pathname: '/services' }} label={label} title="Go back to services" />
+            label = <Anchor path={{ pathname: '/services' }} label={<Box flex={false} direction="row" gap="xxsmall" align="center">{label}< Revert size="list" color="light-5" /></Box >} title="Go back to services" />
             icon = <LoadSaveIndicator loading={reloadPending || queryPending} success={queryFinished} />
         } else {
             navControl = <Multiple />

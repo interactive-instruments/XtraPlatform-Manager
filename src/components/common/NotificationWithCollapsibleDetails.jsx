@@ -48,7 +48,11 @@ class NotificationWithCollapsibleDetails extends Component {
     render() {
         const { message, details, ...rest } = this.props;
         const { detailsOpen } = this.state;
-        console.log('DETA', details)
+
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('DETA', details)
+        }
+
         const dtls = details && <Collapsible open={detailsOpen}>
             {details.map((dtl, i) => <Text key={i} size="medium" margin="none">
                 {i > 0 && <br />}

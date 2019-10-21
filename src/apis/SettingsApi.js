@@ -7,13 +7,15 @@
  */
 
 
+import { secureQuery } from './AuthApi'
+import { DEFAULT_OPTIONS } from './ServiceApi'
 
 
 const SettingsApi = {
 
 
-    getSettingsQuery: function () {
-        return {
+    getSettingsQuery: function (options = DEFAULT_OPTIONS) {
+        const query = {
             url: `../rest/admin/settings/`,
             transform: (settingIds) => ({
                 settingIds: settingIds
@@ -21,12 +23,14 @@ const SettingsApi = {
             update: {
                 settingIds: (prev, next) => next
             },
-            force: true
+            force: options.forceReload
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 
-    getSettingQuery: function (id) {
-        return {
+    getSettingQuery: function (id, options = DEFAULT_OPTIONS) {
+        const query = {
             url: `../rest/admin/settings/${encodeURIComponent(id)}/`,
             transform: (setting) => ({
                 setting: { [id]: setting }
@@ -40,10 +44,12 @@ const SettingsApi = {
                 }
             },
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 
-    updateSettingQuery: function (id, setting) {
-        return {
+    updateSettingQuery: function (id, setting, options = DEFAULT_OPTIONS) {
+        const query = {
             url: `../rest/admin/settings/${encodeURIComponent(id)}/`,
             body: JSON.stringify(setting),
             options: {
@@ -62,6 +68,8 @@ const SettingsApi = {
                 }),
             },
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 }
 

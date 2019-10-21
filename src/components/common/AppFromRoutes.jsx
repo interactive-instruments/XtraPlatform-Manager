@@ -28,13 +28,14 @@ import RouteComponent from './RouteComponent'
 export default class AppFromRoutes extends Component {
 
     _renderRoute = (route, prefix = '') => {
-        const { urlParams, urlQuery, urlLevels, user, applicationName, logo, serviceTypes, typeLabels, serviceMenu, typedComponents, extendableComponents, theme } = this.props;
+        const { urlParams, urlQuery, urlLevels, user, secured, applicationName, logo, serviceTypes, typeLabels, serviceMenu, typedComponents, extendableComponents, theme } = this.props;
 
         const componentProps = {
             urlParams,
             urlQuery,
             urlLevels,
             user,
+            secured,
             applicationName,
             logo,
             serviceTypes,
@@ -51,7 +52,9 @@ export default class AppFromRoutes extends Component {
         //console.log(path)
 
         const wrapper = (show, child) => {
-            console.log(show ? 'show ' : 'hide ', child.props.route.path);
+            if (process.env.NODE_ENV !== 'production') {
+                console.log(show ? 'show ' : 'hide ', child.props.route.path);
+            }
             return <Animate
                 show={show} // Toggle true or false to show or hide the content!
                 duration={500}

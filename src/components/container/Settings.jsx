@@ -10,9 +10,9 @@ import { Alert } from 'grommet-icons';
 
 import SettingsApi from '../../apis/SettingsApi'
 import SettingShow from '../container/SettingShow';
+import { withAppConfig } from '../../app-context'
 
-
-
+@withAppConfig()
 
 @connect(
     (state, props) => {
@@ -21,21 +21,21 @@ import SettingShow from '../container/SettingShow';
             setting: state.entities.setting
         }
     },
-    (dispatch) => {
+    (dispatch, props) => {
         return {
             showSettings: () => {
                 dispatch(push(`/settings`))
             },
             updateSetting: (id, setting) => {
-                dispatch(mutateAsync(SettingsApi.updateSettingQuery(id, setting)))
+                dispatch(mutateAsync(SettingsApi.updateSettingQuery(id, setting, { secured: props.appConfig.secured })))
                     .then((result) => {
                         if (result.status === 200) {
-                            dispatch(requestAsync(SettingsApi.getSettingQuery(id)));
+                            dispatch(requestAsync(SettingsApi.getSettingQuery(id, { secured: props.appConfig.secured })));
                         } else {
-                            console.log('ERR', result)
-                            const error = result.body && result.body.error || {}
-
-
+                            if (process.env.NODE_ENV !== 'production') {
+                                console.log('ERR', result)
+                                const error = result.body && result.body.error || {}
+                            }
                         }
 
                     })
@@ -47,9 +47,9 @@ import SettingShow from '../container/SettingShow';
 @connectRequest(
     (props) => {
         if (!props.settingIds || !props.settingIds.categories) {
-            return SettingsApi.getSettingsQuery()
+            return SettingsApi.getSettingsQuery({ forceReload: true, secured: props.appConfig.secured })
         }
-        return props.settingIds.categories.map(id => SettingsApi.getSettingQuery(id))
+        return props.settingIds.categories.map(id => SettingsApi.getSettingQuery(id, { secured: props.appConfig.secured }))
     })
 
 

@@ -31,16 +31,23 @@ import ServiceTask from './ServiceTask'
 export default class ServiceTile extends PureComponent {
 
   render() {
-    const { id, label, status, hasBackgroundTask, message, progress, changeLocation, selected, compact, small } = this.props;
+    const { id, label, status, shouldStart, hasBackgroundTask, message, progress, changeLocation, selected, compact, small } = this.props;
 
-    console.log('MSG', message, progress, hasBackgroundTask)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('MSG', message, progress, hasBackgroundTask)
+    }
+    const isInitializing = status === 'INITIALIZING';
+    const isOnline = 'STARTED' === status;
+    const isDisabled = !isOnline && shouldStart;
+
+    const iconSize = compact ? "list" : "medium"
     let status1 = hasBackgroundTask ? <ServiceTask progress={progress} message={message} /> : null; // item.status === 'INITIALIZING' ? 'Initializing' : (item.status === 'STARTED' ? 'Online' : 'Offline');
     let icon1 = ''; // item.status === 'INITIALIZING' ? <Spinning size="medium" style={ { verticalAlign: 'middle', marginRight: '6px' } } /> : <StatusIcon value={ item.status === 'STARTED' ? 'ok' : 'critical' } size="medium" />
-    let status2 = status === 'INITIALIZING' ? 'Initializing' : (status === 'STARTED' ? 'Published' : 'Offline');
-    let icon2 = status === 'INITIALIZING'
-      ? <Spinning size="medium" style={{ verticalAlign: 'middle', marginRight: '6px' }} />
-      : <StatusIcon value={status === 'STARTED' ? 'ok' : 'critical'}
-        size="medium"
+    let status2 = isInitializing ? 'Initializing' : isOnline ? 'Published' : isDisabled ? 'Defective' : 'Offline';
+    let icon2 = isInitializing
+      ? <Spinning size={iconSize} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+      : <StatusIcon value={isOnline ? 'ok' : isDisabled ? 'critical' : 'disabled'}
+        size={iconSize}
         a11yTitle={status2}
         title={status2} />
 
@@ -59,22 +66,33 @@ export default class ServiceTile extends PureComponent {
         <Box fill="horizontal"
           textSize="small">
           <Box direction="row" justify="between" align="center" fill="horizontal">
-            <Text size='small' weight='bold' color='dark-6' truncate={true}>
-              {id}{compact && ` - ${label}`}
+            <Text size={compact ? 'xsmall' : 'small'} weight='bold' color='light-6' truncate={true} title={id} margin={{ right: "xsmall" }} style={{ fontFamily: '"Roboto Mono", monospace' }}>
+              {id}
             </Text>
             <span title={status2}>{icon2}</span>
           </Box>
-          {!compact && <Box
-            margin={{ top: "small" }}
-            direction="row"
-            align="center"
-            justify="between"
-            textSize="small"
-          >
-            <Heading level="4" truncate={true} margin="none" title={label}>
-              {label}
-            </Heading>
-          </Box>}
+          {!compact
+            ? <Box
+              margin={{ top: "small" }}
+              direction="row"
+              align="center"
+              justify="between"
+              textSize="small"
+            >
+              <Heading level="4" truncate={true} margin="none" title={label}>
+                {label}
+              </Heading>
+            </Box>
+            : <Box
+              margin={{ top: "none" }}
+              direction="row"
+              align="center"
+              justify="between"
+            >
+              <Heading level="6" truncate={true} margin="none" title={label}>
+                {label}
+              </Heading>
+            </Box>}
           {!compact && <Box direction="row" justify="between" align="center">
             {hasBackgroundTask ? <span><span style={{ verticalAlign: 'middle' }}>{status1}</span></span> : ''}
           </Box>}

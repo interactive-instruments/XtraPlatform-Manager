@@ -23,9 +23,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux'
 import { AppContainer } from 'react-hot-loader';
-import jwtDecode from 'jwt-decode'
 
 import App from './AppFromRoutes'
+import { AppContext } from '../../app-context'
 
 
 let config;
@@ -44,13 +44,17 @@ const _render = (Component, store, props) => {
         urlParams: state.router.params,
         urlQuery: state.router.query,
         urlLevels: state.router.pathname ? state.router.pathname.indexOf('/users/add') > -1 ? 1 : state.router.pathname.split('/').filter(elem => elem.length).length : 0,
-        user: state.entities.token ? jwtDecode(state.entities.token) : props.user
+        user: state.entities.token ? state.entities.token : props.user
     })))(Component)
+
+
 
     ReactDOM.render(
         <AppContainer>
             <Provider store={store}>
-                <Connected {...props} />
+                <AppContext.Provider value={props}>
+                    <Connected {...props} />
+                </AppContext.Provider>
             </Provider>
         </AppContainer>,
         document.getElementById('app-wrapper')
