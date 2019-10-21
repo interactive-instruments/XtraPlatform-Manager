@@ -80,7 +80,7 @@ class Manager extends Component {
         const { secured, user, navToggle } = this.props;
 
         if (!secured) {
-            this._login({})
+            this._login({ rememberMe: true })
         } else if (!user) {
             navToggle(true);
         }

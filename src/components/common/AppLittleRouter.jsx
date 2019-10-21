@@ -43,7 +43,7 @@ const _render = (Component, store, props) => {
     const Connected = connect((state => ({
         urlParams: state.router.params,
         urlQuery: state.router.query,
-        urlLevels: state.router.pathname ? state.router.pathname.indexOf('/users/add') > -1 ? 1 : state.router.pathname.split('/').filter(elem => elem.length).length : 0,
+        urlLevels: state.router.pathname ? state.router.pathname.indexOf('/users/add') > -1 || state.router.pathname.indexOf('/codelists/') > -1 ? 1 : state.router.pathname.split('/').filter(elem => elem.length).length : 0,
         user: state.entities.token ? state.entities.token : props.user
     })))(Component)
 
