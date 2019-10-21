@@ -66,7 +66,7 @@ export default class ServiceTile extends PureComponent {
         <Box fill="horizontal"
           textSize="small">
           <Box direction="row" justify="between" align="center" fill="horizontal">
-            <Text size={compact ? 'xsmall' : 'small'} weight='bold' color='light-6' truncate={true} title={id} margin={{ right: "xsmall" }} style={{ fontFamily: '"Roboto Mono", monospace' }}>
+            <Text size={compact ? 'xsmall' : 'small'} weight='bold' color='dark-4' truncate={true} title={id} margin={{ right: "xsmall" }} style={{ fontFamily: '"Roboto Mono", monospace' }}>
               {id}
             </Text>
             <span title={status2}>{icon2}</span>

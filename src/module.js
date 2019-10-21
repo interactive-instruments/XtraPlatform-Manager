@@ -11,6 +11,7 @@ import ServiceShow from './components/container/Service'
 import ServiceAdd from './components/container/ServiceAdd'
 import NotFound from './components/presentational/NotFound'
 import Settings from './components/container/Settings'
+import Console from './components/presentational/Console'
 
 
 import { render as renderApp } from './components/common/AppLittleRouter'
@@ -65,6 +66,13 @@ export const app = {
                 menu: true,
                 roles: ['SUPERADMIN', 'ADMIN']
             },
+            process.env.NODE_ENV === 'development' ? {
+                path: '/console',
+                component: Console,
+                title: 'Console',
+                menu: true,
+                roles: ['SUPERADMIN', 'ADMIN']
+            } : {},
             {
                 path: '/404',
                 forNoMatch: true,
