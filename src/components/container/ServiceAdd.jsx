@@ -53,7 +53,7 @@ import { withAppConfig } from 'xtraplatform-manager/src/app-context'
     (state, props) => {
         return {}
     },
-    (dispatch) => {
+    (dispatch, props) => {
         return {
             addService: (service) => {
                 dispatch(mutateAsync(ServiceApi.addServiceQuery(service, { secured: props.appConfig.secured })))
