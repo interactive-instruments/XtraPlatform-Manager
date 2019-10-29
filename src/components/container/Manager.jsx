@@ -71,17 +71,22 @@ class Manager extends Component {
     }
 
     _changePassword = (update) => {
-        const { dispatch } = this.props;
+        const { dispatch, secured } = this.props;
 
         dispatch(mutateAsync(UserApi.changePasswordQuery(update.user, update)))
+        /*.then((result) => {
+            if (result.status === 200 || result.status === 204) {
+                dispatch(requestAsync(UserApi.getUsersQuery({ forceReload: true, secured: secured })));
+            }
+        })*/
     }
 
     componentWillMount() {
-        const { secured, user, navToggle } = this.props;
+        const { secured, user, urlLevels, navToggle } = this.props;
 
         if (!secured) {
             this._login({ rememberMe: true })
-        } else if (!user) {
+        } else if (!user && urlLevels > 1) {
             navToggle(true);
         }
     }
@@ -101,7 +106,7 @@ class Manager extends Component {
                 {user
                     ? <Box direction="row" fill>
                         <NavSidebar secured={secured} user={user} onLogout={this._logout} isActive={navActive} isLayer={urlLevels > 1} title={applicationName} logo={logo} routes={routes} onChangePassword={this._changePassword} onClose={navToggle.bind(null, false)} />
-                        <Box flex fill="vertical">{children}</Box>
+                        <Box flex fill="vertical">{user.forceChangePassword || children}</Box>
                     </Box>
                     : <Box direction="row" fill>
                         <NavSidebar secured={secured} login={true} onLogin={this._login} loginError={authError} loginExpired={authExpired} isActive={navActive} isLayer={urlLevels > 1} title={applicationName} logo={logo} routes={routes} onChangePassword={this._changePassword} onClose={navToggle.bind(null, false)} />

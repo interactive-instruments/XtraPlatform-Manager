@@ -59,13 +59,13 @@ export const app = {
             },
             {},
             {},
-            {
+            /*{
                 path: '/settings',
                 component: Settings,
                 title: 'Settings',
                 menu: true,
                 roles: ['SUPERADMIN', 'ADMIN']
-            },
+            },*/
             process.env.NODE_ENV === 'development' ? {
                 path: '/console',
                 component: Console,

@@ -63,8 +63,8 @@ const NavSidebar = ({ title, logo, routes, onClose, isLayer, isActive, loginErro
                 {(!secured && !user)
                     ? <></>
                     : (user
-                        ? user.changePassword || isChangePassword
-                            ? <NavChangePassword name={user.sub} onCancel={() => setChangePassword(false)} onChange={onChangePassword} />
+                        ? user.forceChangePassword || isChangePassword
+                            ? <NavChangePassword name={user.sub} onCancel={!user.forceChangePassword && (() => setChangePassword(false))} onChange={(update) => { setChangePassword(false); onChangePassword(update); }} />
                             : <Box justify="around" fill="vertical">
                                 <NavMenu routes={routes} role={user.role} onClose={onClose} />
                                 <NavUser name={user.sub} onChangePassword={secured && (() => setChangePassword(true))} onLogout={secured && onLogout} />

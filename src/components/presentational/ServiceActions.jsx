@@ -69,7 +69,8 @@ const ServiceActions = props => {
     const { id, status, shouldStart, secured, token, ViewActions } = props;
     const isOnline = 'STARTED' === status;
     const isDisabled = !isOnline && shouldStart;
-    const parameters = secured ? `?token=${token}` : ''
+    // not needed anymore, handled by cookies
+    const parameters = ''; //secured ? `?token=${token}` : ''
 
     return (
         <Box flex={false}>

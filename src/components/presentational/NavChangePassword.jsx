@@ -30,7 +30,7 @@ const NavChangePassword = ({ name, onChange, onCancel }) => {
     const vldtr = v(ui);
 
     const reset = (e) => {
-        onCancel();
+        onCancel && onCancel();
         setUI(initialUI)
         if (e && e.target && e.target.oldPassword) {
             e.target.oldPassword.focus();
@@ -83,7 +83,7 @@ const NavChangePassword = ({ name, onChange, onCancel }) => {
                             onChange={updateUI} />
                     </FormField>
                     <Box pad={{ vertical: 'medium' }} direction="row" justify="around">
-                        <Button label="Cancel" type="reset" />
+                        {onCancel && <Button label="Cancel" type="reset" />}
                         <Button primary label="Submit" type="submit" />
                     </Box>
                 </Form>
