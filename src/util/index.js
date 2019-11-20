@@ -8,12 +8,14 @@
 let _timers = {}
 
 export const getCookieValue = (name) => {
-    var value = document.cookie.match(`(^|[^;]+)\\s*${name}\\s*=\\s*([^;]+)`);
+    //console.log('COOKIES', document.cookie)
+    var value = document.cookie.match(new RegExp(`(^|[^;]+)\\s*${name}\\s*=\\s*([^;]+)`, 'g'));
+    //console.log('COOKIE', value)
     return value ? value.pop() : '';
 }
 
 export const deleteCookie = (name) => {
-    const cookie = `${name}=; Max-Age=0; path=/; domain=${location.hostname}`;
+    const cookie = `${name}=; Max-Age=0; path=/`;
     document.cookie = cookie
 }
 

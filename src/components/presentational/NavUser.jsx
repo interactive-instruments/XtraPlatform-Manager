@@ -11,13 +11,13 @@ const NavUser = ({ name, onLogout, onChangePassword }) => {
         <Box pad={{ vertical: 'medium', horizontal: 'small' }}>
             <DropButton icon={<User color="light-1" />}
                 dropAlign={{ bottom: 'top', left: 'left' }}
-                dropContent={<Box pad="small" gap="small" fill={false}>
+                dropContent={<Box pad="small" gap="small">
                     <Box border={{ side: 'bottom', size: 'small' }} pad={{ bottom: 'small' }} align="center" flex={false}>
                         <Text weight="bold">{name}</Text>
                     </Box>
                     <Box flex={false}>
-                        {onChangePassword && <Button onClick={onChangePassword} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Change password</Box></Button>}
-                        {onLogout && <Button onClick={onLogout} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button>}
+                        {onChangePassword && <Box><Button onClick={onChangePassword} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Change password</Box></Button></Box>}
+                        {onLogout && <Box><Button onClick={onLogout} plain={true} fill="horizontal" hoverIndicator={true}><Box pad={{ vertical: "xsmall" }} align="center">Logout</Box></Button></Box>}
                     </Box>
                 </Box>}></DropButton>
         </Box >
