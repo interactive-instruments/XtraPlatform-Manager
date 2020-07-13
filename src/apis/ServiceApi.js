@@ -112,6 +112,10 @@ const ServiceApi = {
                     [serviceId]: {
                         ...prev[serviceId],
                         ...update,
+                        featureProvider: {
+                            ...prev[serviceId].featureProvider,
+                            ...update.featureProvider,
+                        },
                         lastModified: Date.now()
                     }
                 })
