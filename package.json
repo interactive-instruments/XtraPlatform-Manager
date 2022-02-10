@@ -37,7 +37,7 @@
     "jsheader": "^0.0.2",
     "jwt-decode": "^2.2.0",
     "mini-css-extract-plugin": "^0.6.0",
-    "node-sass": "^4.11.0",
+    "node-sass": "^7.0.0",
     "postcss-loader": "^3.0.0",
     "react-hot-loader": "^4.8.4",
     "redux-devtools-extension": "^2.13.8",
